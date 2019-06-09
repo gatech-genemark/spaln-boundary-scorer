@@ -25,7 +25,7 @@ void printUsage(char * name) {
             "      based on the quality indicator in the input alignment \n"
             "      file." << endl;
     cout << "   -k Specify type of weighting kernel used. Available opti-\n"
-            "      ons are \"triangular\", \"linear\", \"parabolic\" and \n"
+            "      ons are \"triangular\", \"box\", \"parabolic\" and \n"
             "      \"triweight\". Triangular kernel is the default option." << endl;
 }
 
@@ -82,9 +82,9 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    if (kernelType != "triangular" && kernelType != "linear" &&
+    if (kernelType != "triangular" && kernelType != "box" &&
             kernelType != "parabolic" && kernelType != "triweight") {
-        cerr << "error: Invalid kernel. Valid options are \"linear\","
+        cerr << "error: Invalid kernel. Valid options are \"box\","
                 "\"triangular\", \"parabolic\" and \"triweight\" kernels." << endl;
         printUsage(argv[0]);
         return 1;
@@ -103,8 +103,8 @@ int main(int argc, char** argv) {
     Kernel * kernel;
     if (kernelType == "triangular") {
         kernel = new TriangularKernel();
-    } else if (kernelType == "linear") {
-        kernel = new LinearKernel();
+    } else if (kernelType == "box") {
+        kernel = new BoxKernel();
     } else if (kernelType == "parabolic") {
         kernel = new ParabolicKernel();
     } else if (kernelType == "triweight") {

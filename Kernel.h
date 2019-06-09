@@ -11,8 +11,8 @@ protected:
     int width;
 };
 
-/// Linear Kernel
-class LinearKernel : public Kernel {
+/// Box Kernel
+class BoxKernel : public Kernel {
 public:
     double getWeight(int offset);
 };

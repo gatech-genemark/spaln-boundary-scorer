@@ -8,7 +8,7 @@ void Kernel::setWidth(int width) {
     this->width = width;
 }
 
-double LinearKernel::getWeight(int offset) {
+double BoxKernel::getWeight(int offset) {
     offset = abs(offset);
     if (offset < width) {
         return 1;
