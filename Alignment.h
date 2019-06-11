@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <vector>
+#include <string>
 #include "ScoreMatrix.h"
 #include "IntronStorage.h"
 #include "Kernel.h"
@@ -19,10 +20,10 @@ public:
      * The function checks if the general structure of the alignment
      * is OK but it does not check the validity of every single base/protein.
      *
-     * @param fstream File stream starting at the position of 
+     * @param fstream File stream starting at the position of
      *                the alignment start.
      */
-    int parse(ifstream & inputStream);
+    int parse(ifstream & inputStream, string headerLine);
     /**
      * @return Name of the aligned gene
      */
@@ -72,6 +73,8 @@ private:
      */
     void clear();
 
+    /// Overall alignment lentgh
+    unsigned int blockLength;
     /// Overall position in alignment
     int index;
     int realPositionCounter;
@@ -81,11 +84,9 @@ private:
         /**
          * Save pair and determine exon/intron
          */
-        AlignedPair(char n, char tc, char q,
-                char p, char type);
+        AlignedPair(char tc, char n, char p);
         /**
-         * Return amino acid score. Either based on scoring matrix or alignment
-         * quality from the alignment file if no matrix is given
+         * Return amino acid score
          * @return AA score
          */
         double score(const ScoreMatrix * scoreMatrix);
@@ -97,15 +98,8 @@ private:
          * Lowercase letters are used at splice sites.
          */
         char translatedCodon;
-        /**
-         * Quality of a single AA alignment.
-         * '|' for complete match
-         * '+' for good match
-         * ' ' for bad match
-         */
-        double quality;
         char protein;
-        /** 
+        /**
          * Type of DNA base (based on alignment)
          * 'i' for intron
          * 'e' for exon
@@ -128,6 +122,7 @@ private:
         bool scoreSet;
         char donor[2];
         char acceptor[2];
+        bool complete;
         double leftScore, rightScore;
         double leftWeightSum, rightWeightSum;
     };
@@ -138,27 +133,27 @@ private:
     vector<AlignedPair> pairs;
 
 
-    vector<string> header;
-    static const int HEADER_SIZE = 6;
-    int parseHeader(const string & headerString);
-
-    int readAlignmentStart(const string & headerString);
-
     static const int BLOCK_LENGTH = 100;
-    static const int BLOCK_ITEMS_CNT = 5;
-    static const int BLOCK_OFFSET = 12;
+    static const int BLOCK_ITEMS_CNT = 3;
+    static const int BLOCK_OFFSET = 9;
+    /**
+     *  Parse gene and protein name from header line
+     */
+    int parseHeader(string headerLine);
     /**
      *  Parse individual block of lines containing the alignment and its properties
      */
     void parseBlock(const vector<string>& lines);
 
-    void printLineError();
-
     /**
-     * Fill spaces in codon to protein mapping by numbers
-     * corresponding to position in the codon
+     * Check if the given character is an amino acid or a gap
      */
-    void mapCodons(AlignedPair & pair);
+    bool gapOrAA(char a);
+    /**
+     * Assign phases to all positions
+     */
+    void assignCodonPhases();
+    void printLineError();
 
     bool insideIntron;
     // Flag indicating that donor position of an intron is being read

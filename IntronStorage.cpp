@@ -60,8 +60,8 @@ void IntronStorage::printIntrons(string output, bool printAll) {
         // Discard non-canonical splice sites unless the splice site is
         // GC-AG or AT-AC with alignment score better than PRINT_THRESHOLD
         string spliceSites = introns[i].spliceSites;
-        if (!printAll && spliceSites != "GT_AG") {
-            if (spliceSites == "GC_AG" || spliceSites == "AT_AC") {
+        if (!printAll && spliceSites != "gt_ag") {
+            if (spliceSites == "gc_ag" || spliceSites == "at_ac") {
                 if (introns[i].score < PRINT_THRESHOLD) {
                     continue;
                 }
@@ -70,7 +70,7 @@ void IntronStorage::printIntrons(string output, bool printAll) {
             }
         }
 
-        ofs << introns[i].gene << "\tProSplign\tIntron\t";
+        ofs << introns[i].gene << "\tSpaln\tIntron\t";
         ofs << introns[i].start << "\t";
         ofs << introns[i].end << "\t";
         ofs << ".\t+\t.\tprot=" << introns[i].protein;

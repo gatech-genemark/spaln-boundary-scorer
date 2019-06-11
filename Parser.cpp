@@ -5,8 +5,8 @@
 
 using namespace std;
 
-const char Parser::PAIR_SEPARATOR[] = "************************************"
-        "************************************";
+//const char Parser::PAIR_SEPARATOR[] = "************************************"
+//        "************************************";
 
 Parser::Parser() {
     scoreCombination = BOUNDARIES_SUMMED;
@@ -22,8 +22,8 @@ int Parser::parse(string intputFile, string outputFile) {
         return OPEN_FAIL;
     }
     IntronStorage storage;
-
     int status = parseNext();
+
     while (status != NO_MORE_ALIGNMENTS) {
         if (scoreCombination == BOUNDARIES_SUMMED) {
             alignment.scoreIntrons(windowLength, false, scoreMatrix, kernel);
@@ -40,17 +40,10 @@ int Parser::parse(string intputFile, string outputFile) {
 }
 
 int Parser::parseNext() {
-    int consecutiveSeparators = 0;
     string line;
-
     while (getline(inputStream, line)) {
-        if (line == PAIR_SEPARATOR) {
-            consecutiveSeparators++;
-            if (consecutiveSeparators == NUM_SEPARATORS) {
-                return alignment.parse(inputStream);
-            }
-        } else {
-            consecutiveSeparators = 0;
+        if (line.substr(0,1) == ">") {
+            return alignment.parse(inputStream, line);
         }
     }
 

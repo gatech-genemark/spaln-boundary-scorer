@@ -28,8 +28,8 @@ double ScoreMatrix::getScore(char a, char b) const {
     // This is usually caused by frameshifts. Returning zero works because the remainder
     // of the alignment after frameshift also results in mismatches and thus zeros.
     // Still, frameshifts should be handled in a better way.
-    // cerr << "Warning: score for (" << a << "," << b << ") is not defined in the "
-    //        "matrix. Returning 0 instead." << endl;
+    cerr << "Warning: score for (" << a << "," << b << ") is not defined in the "
+            "matrix. Returning 0 instead." << endl;
 
     return 0;
 }
