@@ -6,6 +6,8 @@
 #include <map>
 #include <vector>
 
+#define UNKNOWN_SCORE -4
+
 using namespace std;
 
 // Class for loading and accessing substitution scoring matrices

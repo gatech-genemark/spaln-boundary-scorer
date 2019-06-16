@@ -29,9 +29,9 @@ double ScoreMatrix::getScore(char a, char b) const {
     // of the alignment after frameshift also results in mismatches and thus zeros.
     // Still, frameshifts should be handled in a better way.
     cerr << "Warning: score for (" << a << "," << b << ") is not defined in the "
-            "matrix. Returning 0 instead." << endl;
+            "matrix. Returning " << UNKNOWN_SCORE << " instead." << endl;
 
-    return 0;
+    return UNKNOWN_SCORE;
 }
 
 double ScoreMatrix::getMaxScore() const {
