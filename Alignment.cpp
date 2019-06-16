@@ -7,8 +7,11 @@
 #include <utility>
 #include <cmath>
 #include <ctype.h>
+#include <algorithm>
 
 using namespace std;
+
+// TODO: Normalization
 
 Alignment::Alignment() {
     pairs.reserve(N);
@@ -64,8 +67,10 @@ int Alignment::parse(ifstream& inputStream, string headerLine) {
             return FORMAT_FAIL;
         }
     }
-
-    blockLength = blockLines[1].find(" ", BLOCK_OFFSET) - BLOCK_OFFSET;
+    // Look for a long string of spaces in the end. Shorter strings of spaces
+    // might be gaps inside introns
+    blockLength = blockLines[1].find("                            "
+            "                             ", BLOCK_OFFSET) - BLOCK_OFFSET;
     for (i = 0; i < BLOCK_ITEMS_CNT; i++) {
         blockLines[i] = blockLines[i].substr(BLOCK_OFFSET, blockLength);
         if (blockLines[i].size() != blockLength) {
@@ -74,6 +79,7 @@ int Alignment::parse(ifstream& inputStream, string headerLine) {
         }
     }
 
+    replace(blockLines[1].begin(), blockLines[1].end(), ' ', '-');
     parseBlock(blockLines);
 
     return READ_SUCCESS;
@@ -100,11 +106,11 @@ int Alignment::parseHeader(string headerLine) {
 void Alignment::parseBlock(const vector<string>& lines) {
     // Parse individual pairs
     for (unsigned i = 0; i < lines[0].size(); i++) {
-        AlignedPair pair(lines[0][i], lines[1][i], lines[2][i]);
+        AlignedPair pair(lines[0][i], lines[1][i], lines[2][i], insideIntron);
 
         checkForIntron(pair);
 
-        if (pair.nucleotide != '-') {
+        if (pair.nucleotide != '-' && pair.nucleotide != ' ') {
             pair.realPosition = realPositionCounter++;
         }
 
@@ -187,7 +193,12 @@ void Alignment::checkForIntron(AlignedPair& pair) {
         introns.back().acceptor[0] = pairs[index - 2].nucleotide;
         introns.back().acceptor[1] = pairs[index - 1].nucleotide;
         insideIntron = false;
-       introns.back().complete = true;
+        if (introns.back().start != 0 && introns.back().gap == false) {
+            introns.back().complete = true;
+        }
+    } else if (insideIntron && pair.nucleotide == '-') {
+        // Gap (AA aligned) inside introns, do not report these introns
+        introns.back().gap = true;
     }
 }
 
@@ -249,6 +260,7 @@ int Alignment::getLength() {
 Alignment::Intron::Intron() {
     scoreSet = false;
     complete = false;
+    gap = false;
 }
 
 void Alignment::scoreIntrons(int windowWidth, bool multiply,
@@ -258,6 +270,7 @@ void Alignment::scoreIntrons(int windowWidth, bool multiply,
     this->kernel->setWidth(windowWidth);
     for (unsigned int i = 0; i < introns.size(); i++) {
         if (introns[i].complete && !introns[i].scoreSet) {
+           // cerr << i << endl;
            scoreIntron(introns[i], windowWidth, multiply);
         }
     }
@@ -297,7 +310,7 @@ double Alignment::scoreIntron(Intron& intron, int windowWidth, bool multiply) {
 
     scoreLeft(intron, left, windowWidth);
     scoreRight(intron, right, windowWidth);
-
+    // cout << intron.leftWeightSum << endl;
     // Normalize alignments by their length, otherwise alignments
     // in short exons between introns are penalized
     if (multiply) {
@@ -305,6 +318,8 @@ double Alignment::scoreIntron(Intron& intron, int windowWidth, bool multiply) {
                 intron.leftScore < 0 || intron.rightScore < 0) {
             intron.score = 0;
         } else {
+            intron.leftWeightSum = 5.5;
+            intron.rightWeightSum = 5.5;
             intron.score = (intron.leftScore / (intron.leftWeightSum)) *
                     (intron.rightScore / (intron.rightWeightSum));
             intron.score = sqrt(intron.score);
@@ -345,11 +360,11 @@ void Alignment::scoreRight(Intron & intron, int start, int windowWidth) {
     }
 }
 
-Alignment::AlignedPair::AlignedPair(char tc, char n, char p) :
+Alignment::AlignedPair::AlignedPair(char tc, char n, char p, bool insideIntron) :
 nucleotide(n),
 translatedCodon(tc),
 protein(p) {
-    if (islower(n)) {
+    if (islower(n) || (insideIntron && n == '-')) {
         this->type = 'i';
     } else {
         this->type = 'e';

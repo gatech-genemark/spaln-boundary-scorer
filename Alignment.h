@@ -84,7 +84,7 @@ private:
         /**
          * Save pair and determine exon/intron
          */
-        AlignedPair(char tc, char n, char p);
+        AlignedPair(char tc, char n, char p, bool insideIntron);
         /**
          * Return amino acid score
          * @return AA score
@@ -125,6 +125,8 @@ private:
         bool complete;
         double leftScore, rightScore;
         double leftWeightSum, rightWeightSum;
+        /// Flag indicating that a gap, or aligned protein, was detected inside intron
+        bool gap;
     };
 
     /// Initial size of alignment vector
