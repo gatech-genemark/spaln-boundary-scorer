@@ -7,8 +7,8 @@ TEST_SOURCES=test/t_parser.cpp test/tests.cpp test/t_matrix.cpp
 COMMON_OBJECTS=$(COMMON_SOURCES:.cpp=.o)
 TARGET_OBJECTS=$(TARGET_SOURCES:.cpp=.o)
 TEST_OBJECTS=$(TEST_SOURCES:.cpp=.o)
-EXECUTABLE=prosplign_parser
-TEST_EXECUTABLE=test/t_prosplign_parser
+EXECUTABLE=spaln_parser
+TEST_EXECUTABLE=test/t_spaln_parser
 
 .PHONY: test all target clean
 
