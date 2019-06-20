@@ -278,7 +278,6 @@ void Alignment::scoreIntrons(int windowWidth, bool multiply,
 
 double Alignment::scoreIntron(Intron& intron, int windowWidth, bool multiply) {
     intron.leftScore = intron.rightScore = 0;
-    intron.leftWeightSum = intron.rightWeightSum = 0;
     int left, right;
 
     // Determine if codon is split and how
@@ -292,41 +291,30 @@ double Alignment::scoreIntron(Intron& intron, int windowWidth, bool multiply) {
                 || pairs[intron.start - 2].translatedCodon == '3') {
             // Codon is split after the first nucleotide
             left = intron.start - 3;
-            right = intron.end + 4;
-            // Majority of the codon belongs to the right side
-            double weight = kernel->getWeight(0);
-            intron.rightScore += pairs[intron.end + 1].score(scoreMatrix) * weight;
-            intron.rightWeightSum += weight;
+            right = intron.end + 1;
         } else {
             // Codon is split after the second nucleotide
-            left = intron.start - 4;
+            left = intron.start - 1;
             right = intron.end + 3;
-            // Majority of the codon belongs to the left side
-            double weight = kernel->getWeight(0);
-            intron.leftScore += pairs[intron.start - 1].score(scoreMatrix) * weight;
-            intron.leftWeightSum += weight;
         }
     }
 
     scoreLeft(intron, left, windowWidth);
     scoreRight(intron, right, windowWidth);
-    // cout << intron.leftWeightSum << endl;
-    // Normalize alignments by their length, otherwise alignments
-    // in short exons between introns are penalized
+    double weightSum = kernel->weightSum();
+
+    // Normalize alignments by the area under kernel
     if (multiply) {
-        if (intron.leftWeightSum == 0 || intron.rightWeightSum == 0 ||
-                intron.leftScore < 0 || intron.rightScore < 0) {
+        if (intron.leftScore <= 0 || intron.rightScore <= 0) {
             intron.score = 0;
         } else {
-            intron.leftWeightSum = 5.5;
-            intron.rightWeightSum = 5.5;
-            intron.score = (intron.leftScore / (intron.leftWeightSum)) *
-                    (intron.rightScore / (intron.rightWeightSum));
+            intron.score = (intron.leftScore / weightSum) *
+                    (intron.rightScore / weightSum);
             intron.score = sqrt(intron.score);
         }
     } else {
         intron.score = (intron.leftScore + intron.rightScore) /
-                (intron.leftWeightSum + intron.rightWeightSum);
+                (weightSum * 2);
         if (intron.score < 0) {
             intron.score = 0;
         }
@@ -343,7 +331,6 @@ void Alignment::scoreLeft(Intron & intron, int start, int windowWidth) {
             return;
         }
         double weight = kernel->getWeight((i - start) / 3);
-        intron.leftWeightSum += weight;
         intron.leftScore += pairs[i].score(scoreMatrix) * weight;
     }
 }
@@ -355,7 +342,6 @@ void Alignment::scoreRight(Intron & intron, int start, int windowWidth) {
             return;
         }
         double weight = kernel->getWeight((i - start) / 3);
-        intron.rightWeightSum += weight;
         intron.rightScore += pairs[i].score(scoreMatrix) * weight;
     }
 }

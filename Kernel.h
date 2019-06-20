@@ -6,6 +6,7 @@ class Kernel {
 public:
     virtual double getWeight(int offset) = 0;
     virtual void setWidth(int width);
+    virtual double weightSum();
     virtual ~Kernel() {}
 protected:
     int width;

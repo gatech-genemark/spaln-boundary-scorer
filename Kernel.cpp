@@ -8,6 +8,14 @@ void Kernel::setWidth(int width) {
     this->width = width;
 }
 
+double Kernel::weightSum() {
+    double weightSum = 0;
+    for (int i = 0; i < width; i++) {
+        weightSum += getWeight(i);
+    }
+    return weightSum;
+}
+
 double BoxKernel::getWeight(int offset) {
     offset = abs(offset);
     if (offset < width) {
