@@ -15,6 +15,7 @@ using namespace std;
 class Alignment {
 public:
     Alignment();
+    ~Alignment();
     /**
      * Parse a single gene-protein alignment.
      * The function checks if the general structure of the alignment
@@ -63,8 +64,10 @@ public:
      */
     bool hasIntrons();
 private:
-    /// Starting position of the alignment in the gene
-    int alignmentStart;
+    /// Starting position of the alignment in dna
+    int dnaStart;
+    /// Starting position of the alignment in protein
+    int proteinStart;
     int i;
     string gene;
     string protein;
@@ -110,6 +113,13 @@ private:
         int realPosition;
     };
 
+    struct Exon {
+        Exon(int start);
+        unsigned int start, end;
+        double score;
+        bool scoreSet;
+    };
+
     /**
      * Intron structure for the purposes of the alignment only. Final set of
      * introns from all alignments with correct start and end positions
@@ -124,9 +134,10 @@ private:
         char acceptor[2];
         bool complete;
         double leftScore, rightScore;
-        double leftWeightSum, rightWeightSum;
         /// Flag indicating that a gap, or aligned protein, was detected inside intron
         bool gap;
+        Exon * leftExon;
+        Exon * rightExon;
     };
 
     /// Initial size of alignment vector
@@ -167,7 +178,10 @@ private:
      * @param pair
      */
     void checkForIntron(AlignedPair & pair);
+
+    void checkForStart(AlignedPair & pair);
     vector<Intron> introns;
+    vector<Exon*> exons;
     const ScoreMatrix * scoreMatrix;
     Kernel * kernel;
 
@@ -180,6 +194,7 @@ private:
     void scoreLeft(Intron & intron, int start, int windowWidth);
     /// Alignment score of amino acids in exon after intron end
     void scoreRight(Intron & intron, int start, int windowWidth);
+    void scoreExon(Exon * exon);
 };
 
 

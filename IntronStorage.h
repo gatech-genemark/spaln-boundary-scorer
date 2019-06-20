@@ -25,7 +25,8 @@ public:
      * Add an intron to the storage
      */
     void storeIntron(string protein, string gene, int start, int end,
-            char strand, string spliceSites, double score, int number);
+            char strand, string spliceSites, double score, int number,
+            double leftExonScore, double rightExonScore);
     /**
      * Normalize intron scores into 0-1 range, use maximum and minimum
      * directly from the set.
@@ -49,9 +50,11 @@ private:
 
     struct Intron {
         Intron(string protein, string gene, int start, int end,
-                char strand, string spliceSites, double score, int number) :
+                char strand, string spliceSites, double score, int number,
+                double leftExonScore, double rightExonScore) :
         protein(protein), gene(gene), start(start), end(end), strand(strand),
-        spliceSites(spliceSites), score(score), number(number) {
+        spliceSites(spliceSites), score(score), number(number),
+        leftExonScore(leftExonScore), rightExonScore(rightExonScore) {
         }
         string protein;
         string gene;
@@ -61,6 +64,8 @@ private:
         string spliceSites;
         double score;
         int number;
+        double leftExonScore;
+        double rightExonScore;
     };
 
     double minScore;

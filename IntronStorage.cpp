@@ -16,9 +16,11 @@ void IntronStorage::clear() {
 }
 
 void IntronStorage::storeIntron(string protein, string gene, int start, int end,
-        char strand, string spliceSites, double score, int number) {
+        char strand, string spliceSites, double score, int number, double leftExonScore,
+        double rightExonScore) {
 
-    Intron i(protein, gene, start, end, strand, spliceSites, score, number);
+    Intron i(protein, gene, start, end, strand, spliceSites, score,
+            number, leftExonScore, rightExonScore);
     introns.push_back(i);
 
     if (score > maxScore) {
@@ -76,7 +78,9 @@ void IntronStorage::printIntrons(string output, bool printAll) {
         ofs << ".\t+\t.\tprot=" << introns[i].protein;
         ofs << "; intron_id=" << introns[i].number << ";";
         ofs << " splice_sites=" << spliceSites << ";";
-        ofs << " al_score=" << introns[i].score << ";" << endl;
+        ofs << " al_score=" << introns[i].score << ";";
+        ofs << " LeScore=" << introns[i].leftExonScore << ";";
+        ofs << " ReScore=" << introns[i].rightExonScore << ";" << endl;
     }
     ofs.close();
 }

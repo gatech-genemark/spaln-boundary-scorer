@@ -17,12 +17,20 @@ Alignment::Alignment() {
     pairs.reserve(N);
 }
 
+Alignment::~Alignment() {
+    clear();
+}
+
 void Alignment::clear() {
     index = 0;
     insideIntron = false;
     donorFlag = false;
     introns.clear();
-    alignmentStart = 0;
+    for (unsigned int i = 0; i < exons.size(); i++) {
+        delete exons[i];
+    }
+    exons.clear();
+    dnaStart = 0;
 }
 
 int Alignment::parse(ifstream& inputStream, string headerLine) {
@@ -36,9 +44,10 @@ int Alignment::parse(ifstream& inputStream, string headerLine) {
         cerr << "error: Invalid alignment header " << endl;
         return status;
     }
+    //cout << gene << " " << protein << endl;
     // Get to the alignment
     getline(inputStream, line);
-    while (line.substr(0,9) != "ALIGNMENT") {
+    while (line.substr(0, 9) != "ALIGNMENT") {
         if (!getline(inputStream, line)) {
             cerr << "error: Alignment is missing after header " << endl;
             return FORMAT_FAIL;
@@ -55,12 +64,18 @@ int Alignment::parse(ifstream& inputStream, string headerLine) {
             blockLines[i] = line;
             // Get alignment start number
             if (i == 1) {
-                alignmentStart = atoi(line.substr(0, BLOCK_OFFSET).c_str());
-                if (alignmentStart <= 0) {
-                    cerr << "error: Could not read alignment start position" << endl;
+                dnaStart = atoi(line.substr(0, BLOCK_OFFSET).c_str());
+                if (dnaStart <= 0) {
+                    cerr << "error: Could not read dna alignment start position" << endl;
                     return FORMAT_FAIL;
                 }
-                realPositionCounter = alignmentStart;
+                realPositionCounter = dnaStart;
+            } else if (i == 2) {
+                proteinStart = atoi(line.substr(0, BLOCK_OFFSET).c_str());
+                if (proteinStart <= 0) {
+                    cerr << "error: Could not read dna alignment start position" << endl;
+                    return FORMAT_FAIL;
+                }
             }
         } else {
             printLineError();
@@ -81,6 +96,7 @@ int Alignment::parse(ifstream& inputStream, string headerLine) {
 
     replace(blockLines[1].begin(), blockLines[1].end(), ' ', '-');
     parseBlock(blockLines);
+
 
     return READ_SUCCESS;
 }
@@ -109,6 +125,7 @@ void Alignment::parseBlock(const vector<string>& lines) {
         AlignedPair pair(lines[0][i], lines[1][i], lines[2][i], insideIntron);
 
         checkForIntron(pair);
+        checkForStart(pair);
 
         if (pair.nucleotide != '-' && pair.nucleotide != ' ') {
             pair.realPosition = realPositionCounter++;
@@ -143,7 +160,7 @@ void Alignment::assignCodonPhases() {
         if (pairs[i].translatedCodon == ' ' && pairs[i].type == 'e') {
             if (i == 0) {
                 pairs[i].translatedCodon = '1';
-            } else if (i == blockLength -1) {
+            } else if (i == blockLength - 1) {
                 pairs[i].translatedCodon = '3';
             } else if (gapOrAA(pairs[i + 1].translatedCodon)) {
                 pairs[i].translatedCodon = '1';
@@ -159,7 +176,7 @@ void Alignment::assignCodonPhases() {
         if (pairs[i].protein == ' ' && pairs[i].type == 'e') {
             if (i == 0) {
                 pairs[i].protein = '1';
-            } else if (i == blockLength -1) {
+            } else if (i == blockLength - 1) {
                 pairs[i].protein = '3';
             } else if (gapOrAA(pairs[i + 1].protein)) {
                 pairs[i].protein = '1';
@@ -175,6 +192,15 @@ void Alignment::assignCodonPhases() {
 }
 
 void Alignment::checkForIntron(AlignedPair& pair) {
+
+    if (index == 0 && pair.type == 'e') {
+        exons.push_back(new Exon(index));
+    }
+
+     if (index == blockLength - 1 && pair.type == 'e') {
+        exons.back()->end = index;
+     }
+
     if (donorFlag) {
         introns.back().donor[1] = pair.nucleotide;
         donorFlag = false;
@@ -185,6 +211,10 @@ void Alignment::checkForIntron(AlignedPair& pair) {
         Intron i;
         i.start = index;
         i.donor[0] = pair.nucleotide;
+        if (index != 0) {
+            exons.back()->end = index - 1;
+            i.leftExon = exons.back();
+        }
         introns.push_back(i);
         insideIntron = true;
         donorFlag = true;
@@ -196,9 +226,28 @@ void Alignment::checkForIntron(AlignedPair& pair) {
         if (introns.back().start != 0 && introns.back().gap == false) {
             introns.back().complete = true;
         }
+        exons.push_back(new Exon(index));
+        introns.back().rightExon = exons.back();
     } else if (insideIntron && pair.nucleotide == '-') {
         // Gap (AA aligned) inside introns, do not report these introns
         introns.back().gap = true;
+    }
+}
+
+void Alignment::checkForStart(AlignedPair& pair) {
+    int alignmentPosition = realPositionCounter - dnaStart + 1;
+    if (alignmentPosition == 3) {
+        string codon = "";
+        codon += pair.nucleotide;
+        for (int i = 1; i < 3; i++) {
+            codon = pairs[index - i].nucleotide + codon;
+        }
+        if (codon == "ATG") {
+            // Check if protein alignment starts with its first M
+            if (proteinStart == 1 && pairs[index - 1].protein == 'M') {
+                //cout << realPositionCounter - 2 << " " << realPositionCounter << endl;
+            }
+        }
     }
 }
 
@@ -218,7 +267,9 @@ void Alignment::storeIntrons(IntronStorage& storage) {
         storage.storeIntron(protein, gene,
                 pairs[introns[i].start].realPosition,
                 pairs[introns[i].end].realPosition,
-                '+', spliceSites, introns[i].score, i + 1);
+                '+', spliceSites, introns[i].score, i + 1,
+                introns[i].leftExon->score,
+                introns[i].rightExon->score);
     }
 }
 
@@ -263,17 +314,25 @@ Alignment::Intron::Intron() {
     gap = false;
 }
 
+Alignment::Exon::Exon(int start) {
+    this->start = start;
+    scoreSet = false;
+}
+
 void Alignment::scoreIntrons(int windowWidth, bool multiply,
         const ScoreMatrix * scoreMatrix, Kernel * kernel) {
     this->scoreMatrix = scoreMatrix;
     this->kernel = kernel;
     this->kernel->setWidth(windowWidth);
+    for (i = 0; i < exons.size(); i++) {
+        scoreExon(exons[i]);
+    }
     for (unsigned int i = 0; i < introns.size(); i++) {
         if (introns[i].complete && !introns[i].scoreSet) {
-           // cerr << i << endl;
-           scoreIntron(introns[i], windowWidth, multiply);
+            scoreIntron(introns[i], windowWidth, multiply);
         }
     }
+
 }
 
 double Alignment::scoreIntron(Intron& intron, int windowWidth, bool multiply) {
@@ -343,6 +402,18 @@ void Alignment::scoreRight(Intron & intron, int start, int windowWidth) {
         }
         double weight = kernel->getWeight((i - start) / 3);
         intron.rightScore += pairs[i].score(scoreMatrix) * weight;
+    }
+}
+
+void Alignment::scoreExon(Exon* exon) {
+    int i = exon->start;
+    exon->score = 0;
+    while (i <= exon->end) {
+        // check if equal to gapOrAA(pairs[i].protein) || gapOrAA(pairs[i].translatedCodon)
+        if (gapOrAA(pairs[i].protein)) {
+            exon->score += pairs[i].score(scoreMatrix);
+        }
+        i++;
     }
 }
 
