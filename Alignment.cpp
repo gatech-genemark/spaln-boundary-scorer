@@ -15,6 +15,7 @@ using namespace std;
 
 Alignment::Alignment() {
     pairs.reserve(N);
+    start = NULL;
 }
 
 Alignment::~Alignment() {
@@ -31,6 +32,10 @@ void Alignment::clear() {
     }
     exons.clear();
     dnaStart = 0;
+    if (start != NULL) {
+        delete start;
+    }
+    start = NULL;
 }
 
 int Alignment::parse(ifstream& inputStream, string headerLine) {
@@ -245,13 +250,13 @@ void Alignment::checkForStart(AlignedPair& pair) {
         if (codon == "ATG") {
             // Check if protein alignment starts with its first M
             if (proteinStart == 1 && pairs[index - 1].protein == 'M') {
-                //cout << realPositionCounter - 2 << " " << realPositionCounter << endl;
+                start = new Start(index - 2, exons.back());
             }
         }
     }
 }
 
-void Alignment::storeIntrons(IntronStorage& storage) {
+void Alignment::storeIntrons(string output, IntronStorage& storage) {
     for (unsigned int i = 0; i < introns.size(); i++) {
         if (!introns[i].complete) {
             continue;
@@ -271,6 +276,26 @@ void Alignment::storeIntrons(IntronStorage& storage) {
                 introns[i].leftExon->score,
                 introns[i].rightExon->score);
     }
+
+    ofstream ofs(output.c_str(), std::ofstream::out | std::ofstream::app);
+    if (start != NULL) {
+        ofs << gene << "\tSpaln\tstart_codon\t";
+        ofs << pairs[start->position].realPosition << "\t";
+        ofs << pairs[start->position + 2].realPosition  << "\t";
+        ofs << ".\t+\t.\tprot=" << protein << ";";
+        ofs << " score=" << start->score << ";";
+        ofs << " eScore=" << start->exon->score << ";" << endl;
+    }
+
+    for (unsigned int i = 0; i < exons.size(); i++) {
+        ofs << gene << "\tSpaln\tCDS\t";
+        ofs << pairs[exons[i]->start].realPosition << "\t";
+        ofs << pairs[exons[i]->end].realPosition << "\t";
+        ofs << ".\t+\t.\tprot=" << protein;
+        ofs << "; exon_id=" << i + 1 << ";";
+        ofs << " score=" << exons[i]->score << ";" << endl;
+    }
+    ofs.close();
 }
 
 void Alignment::print(ostream& os) {
@@ -319,14 +344,28 @@ Alignment::Exon::Exon(int start) {
     scoreSet = false;
 }
 
+Alignment::Start::Start(int position, Exon * exon) {
+    this->position = position;
+    this->exon = exon;
+}
+
 void Alignment::scoreIntrons(int windowWidth, bool multiply,
         const ScoreMatrix * scoreMatrix, Kernel * kernel) {
     this->scoreMatrix = scoreMatrix;
     this->kernel = kernel;
     this->kernel->setWidth(windowWidth);
+
     for (i = 0; i < exons.size(); i++) {
         scoreExon(exons[i]);
     }
+
+    if (start != NULL) {
+        start->score = 0;
+        scoreStart(start, windowWidth);
+        start->score /=  kernel->weightSum();
+        start->score /= scoreMatrix->getMaxScore();
+    }
+
     for (unsigned int i = 0; i < introns.size(); i++) {
         if (introns[i].complete && !introns[i].scoreSet) {
             scoreIntron(introns[i], windowWidth, multiply);
@@ -402,6 +441,17 @@ void Alignment::scoreRight(Intron & intron, int start, int windowWidth) {
         }
         double weight = kernel->getWeight((i - start) / 3);
         intron.rightScore += pairs[i].score(scoreMatrix) * weight;
+    }
+}
+
+void Alignment::scoreStart(Start* start, int windowWidth) {
+    for (int i = start->position + 1; i < (start->position + 1 + windowWidth * 3); i += 3) {
+        // Check for end of local alignment
+        if (i >= index || pairs[i].type != 'e') {
+            return;
+        }
+        double weight = kernel->getWeight((i - start->position + 1) / 3);
+        start->score += pairs[i].score(scoreMatrix) * weight;
     }
 }
 

@@ -46,7 +46,7 @@ public:
      * which contains all introns
      * @param storeage The intron storage
      */
-    void storeIntrons(IntronStorage & storage);
+    void storeIntrons(string output, IntronStorage & storage);
     /**
      * Score all introns in the alignment
      * @param windowWidth Number of amino acids scored in the upstream and
@@ -120,6 +120,13 @@ private:
         bool scoreSet;
     };
 
+    struct Start {
+        Start(int position, Exon * exon);
+        unsigned int position;
+        double score;
+        Exon * exon;
+    };
+
     /**
      * Intron structure for the purposes of the alignment only. Final set of
      * introns from all alignments with correct start and end positions
@@ -182,6 +189,7 @@ private:
     void checkForStart(AlignedPair & pair);
     vector<Intron> introns;
     vector<Exon*> exons;
+    Start * start;
     const ScoreMatrix * scoreMatrix;
     Kernel * kernel;
 
@@ -195,6 +203,7 @@ private:
     /// Alignment score of amino acids in exon after intron end
     void scoreRight(Intron & intron, int start, int windowWidth);
     void scoreExon(Exon * exon);
+    void scoreStart(Start * start, int windowWidth);
 };
 
 

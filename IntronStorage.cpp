@@ -57,7 +57,7 @@ void IntronStorage::normalizeScores(double min, double max) {
 }
 
 void IntronStorage::printIntrons(string output, bool printAll) {
-    ofstream ofs(output.c_str());
+    ofstream ofs(output.c_str(), std::ofstream::out | std::ofstream::app);
     for (unsigned int i = 0; i < introns.size(); i++) {
         // Discard non-canonical splice sites unless the splice site is
         // GC-AG or AT-AC with alignment score better than PRINT_THRESHOLD

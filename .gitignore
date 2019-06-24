@@ -1,5 +1,5 @@
 src
 *.o
 *.d
-bin/prot/prosplign_parser/nbproject
+nbproject
 

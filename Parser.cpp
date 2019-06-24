@@ -16,6 +16,8 @@ Parser::Parser() {
 }
 
 int Parser::parse(string intputFile, string outputFile) {
+    ofstream ofs(outputFile.c_str());
+    ofs.close();
     inputStream.open(intputFile.c_str());
     if (!inputStream) {
         cerr << "error: Failed to open file \"" << intputFile << "\"" << endl;
@@ -25,12 +27,13 @@ int Parser::parse(string intputFile, string outputFile) {
     int status = parseNext();
 
     while (status != NO_MORE_ALIGNMENTS) {
+        //cout << alignment.getGene() << " " << alignment.getProtein() << endl;
         if (scoreCombination == BOUNDARIES_SUMMED) {
             alignment.scoreIntrons(windowLength, false, scoreMatrix, kernel);
         } else {
             alignment.scoreIntrons(windowLength, true, scoreMatrix, kernel);
         }
-        alignment.storeIntrons(storage);
+        alignment.storeIntrons(outputFile, storage);
         status = parseNext();
     }
     storage.normalizeScores(0, maxScore());
