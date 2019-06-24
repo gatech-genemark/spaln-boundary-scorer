@@ -87,10 +87,11 @@ int Alignment::parse(ifstream& inputStream, string headerLine) {
             return FORMAT_FAIL;
         }
     }
-    // Look for a long string of spaces in the end. Shorter strings of spaces
+    // Any symbol in DNA other than space before pipe signifies the true end of
+    // alignment Looking for the first whitespace in DNA does not work as there
     // might be gaps inside introns
-    blockLength = blockLines[1].find("                            "
-            "                             ", BLOCK_OFFSET) - BLOCK_OFFSET;
+    int pipePosition = blockLines[1].find("|");
+    blockLength = blockLines[1].find_last_not_of(" ", pipePosition - 1) - BLOCK_OFFSET  + 1;
     for (i = 0; i < BLOCK_ITEMS_CNT; i++) {
         blockLines[i] = blockLines[i].substr(BLOCK_OFFSET, blockLength);
         if (blockLines[i].size() != blockLength) {
