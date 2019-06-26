@@ -30,7 +30,8 @@ void printUsage(char * name) {
             "      ons are \"triangular\", \"box\", \"parabolic\" and \n"
             "      \"triweight\". Triangular kernel is the default option." << endl;
     cout << "   -e Minimum exon score. Exons with lower scores (and int-\n"
-            "      rons bordering such exons) are not printed. Default = " <<
+            "      rons bordering such exons; start and stops inside the \n"
+            "      exons) are not printed. Default = " <<
             DEFAULT_EXON_SCORE << endl;
 }
 
@@ -43,7 +44,7 @@ int main(int argc, char** argv) {
     string kernelType = DEFAULT_KERNEL;
     double minExonScore = DEFAULT_EXON_SCORE;
 
-    while ((opt = getopt(argc, argv, "i:o:w:ams:k:")) != EOF) {
+    while ((opt = getopt(argc, argv, "i:o:w:ams:k:e:")) != EOF) {
         switch (opt) {
             case 'i':
                 input = optarg;
