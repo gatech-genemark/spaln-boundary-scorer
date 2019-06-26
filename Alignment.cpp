@@ -141,6 +141,8 @@ void Alignment::parseBlock(const vector<string>& lines) {
 
         if (pair.nucleotide != '-' && pair.nucleotide != ' ') {
             pair.realPosition = realPositionCounter++;
+        } else {
+            pair.realPosition = realPositionCounter - 1;
         }
 
         // Reuse space if possible
@@ -204,8 +206,8 @@ void Alignment::assignCodonPhases() {
 }
 
 void Alignment::checkForIntron(AlignedPair& pair) {
-
-    if (index == 0 && pair.type == 'e') {
+    int alignmentPosition = realPositionCounter - dnaStart + 1;
+    if (alignmentPosition == 1 && pair.type == 'e' && pair.nucleotide != '-') {
         exons.push_back(new Exon(index));
     }
 
