@@ -247,8 +247,8 @@ void Alignment::checkForIntron(AlignedPair& pair) {
 }
 
 void Alignment::checkForStart(AlignedPair& pair) {
-    int alignmentPosition = realPositionCounter - dnaStart + 1;
-    if (alignmentPosition == 3) {
+    //int alignmentPosition = realPositionCounter - dnaStart + 1;
+    if (index == 2) {
         string codon = "";
         codon += pair.nucleotide;
         for (int i = 1; i < 3; i++) {
