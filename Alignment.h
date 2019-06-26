@@ -51,13 +51,11 @@ public:
      * Score all introns in the alignment
      * @param windowWidth Number of amino acids scored in the upstream and
      *                    downstream regions
-     * @param multiply    Whether to multiply or sum scores from upstream and
-     *                    downstream regions
      * @param scoreMatrix Scoring matrix used for scoring amino acids. If no
      *                    matrix is given, score is determined based on the
      *                    quality indicator in the input alignment file
      */
-    void scoreIntrons(int windowWidth, bool multiply,
+    void scoreIntrons(int windowWidth,
             const ScoreMatrix * scoreMatrix, Kernel * kernel);
     /**
      * @return True if alignment contains any introns
@@ -115,7 +113,7 @@ private:
 
     struct Exon {
         Exon(int start);
-        unsigned int start, end;
+        int start, end;
         double score;
         bool scoreSet;
     };
@@ -199,7 +197,7 @@ private:
      * Determine score of a single intron using exon alignment in the
      * upstream and downstream region
      */
-    double scoreIntron(Intron & intron, int windowWidth, bool multiply);
+    double scoreIntron(Intron & intron, int windowWidth);
     /// Alignment score of amino acids in exon before intron start
     void scoreLeft(Intron & intron, int start, int windowWidth);
     /// Alignment score of amino acids in exon after intron end

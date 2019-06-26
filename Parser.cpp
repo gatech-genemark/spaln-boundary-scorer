@@ -5,12 +5,8 @@
 
 using namespace std;
 
-//const char Parser::PAIR_SEPARATOR[] = "************************************"
-//        "************************************";
-
 Parser::Parser() {
-    scoreCombination = BOUNDARIES_SUMMED;
-    windowLength = 20;
+    windowLength = 10;
     printAll = false;
     scoreMatrix = NULL;
 }
@@ -28,11 +24,7 @@ int Parser::parse(string intputFile, string outputFile) {
 
     while (status != NO_MORE_ALIGNMENTS) {
         //cout << alignment.getGene() << " " << alignment.getProtein() << endl;
-        if (scoreCombination == BOUNDARIES_SUMMED) {
-            alignment.scoreIntrons(windowLength, false, scoreMatrix, kernel);
-        } else {
-            alignment.scoreIntrons(windowLength, true, scoreMatrix, kernel);
-        }
+        alignment.scoreIntrons(windowLength, scoreMatrix, kernel);
         alignment.storeIntrons(outputFile, storage);
         status = parseNext();
     }
@@ -54,11 +46,7 @@ int Parser::parseNext() {
 }
 
 double Parser::maxScore() {
-    if (scoreMatrix == NULL) {
-        return COMPLETE_MATCH;
-    } else {
-        return scoreMatrix->getMaxScore();
-    }
+    return scoreMatrix->getMaxScore();
 }
 
 void Parser::setScoringCombination(int combination) {

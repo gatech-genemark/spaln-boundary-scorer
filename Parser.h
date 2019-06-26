@@ -10,10 +10,6 @@
 #define OPEN_FAIL 1
 #define FORMAT_FAIL 2
 #define NO_MORE_ALIGNMENTS 3
-#define COMPLETE_MATCH 1;
-#define GOOD_MATCH 0.5;
-#define BAD_MATCH 0;
-#define GAP -0.5;
 
 using namespace std;
 
@@ -61,9 +57,6 @@ public:
     * Set minimum exon score
     */
     void setMinExonScore(double minExonScore);
-
-    static const int BOUNDARIES_SUMMED = 1;
-    static const int BOUNDARIES_MULTIPLIED = 2;
 
 private:
     /**

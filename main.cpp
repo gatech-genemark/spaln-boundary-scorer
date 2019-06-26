@@ -22,9 +22,6 @@ void printUsage(char * name) {
     cout << "   -a Print all introns. Without  this flag, only  introns\n"
             "      with canonical splite sites and perfectly scored in-\n"
             "      trons with GC-AG and AT-AC splice sites are printed." << endl;
-    cout << "   -m Multiply partial scores from the left and right boun-\n"
-            "      daries of the intron. Default behavior is to sum the \n"
-            "      scores from both sides." << endl;
     cout << "   -s Use specified scoring matrix for intron scoring. Wi-\n"
             "      thout this option, amino acid scores are determined \n"
             "      based on the quality indicator in the input alignment \n"
@@ -41,7 +38,6 @@ int main(int argc, char** argv) {
     int opt;
     int windowWidth = DEFAULT_WINDOW_WIDTH;
     bool printAllSites = false;
-    bool multiply = true;
     string input, output;
     string matrixFile = "";
     string kernelType = DEFAULT_KERNEL;
@@ -60,9 +56,6 @@ int main(int argc, char** argv) {
                 break;
             case 'a':
                 printAllSites = true;
-                break;
-            case 'm':
-                multiply = true;
                 break;
             case 's':
                 matrixFile = optarg;
@@ -124,11 +117,6 @@ int main(int argc, char** argv) {
     }
 
     Parser fileParser;
-    if (multiply) {
-        fileParser.setScoringCombination(Parser::BOUNDARIES_MULTIPLIED);
-    } else {
-        fileParser.setScoringCombination(Parser::BOUNDARIES_SUMMED);
-    }
     fileParser.setWindowLegth(windowWidth);
     printAllSites ? fileParser.printAllSites() : fileParser.printCanonicalsites();
     fileParser.setScoringMatrix(scoreMatrix);

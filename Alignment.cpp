@@ -209,7 +209,7 @@ void Alignment::checkForIntron(AlignedPair& pair) {
         exons.push_back(new Exon(index));
     }
 
-    if (index == blockLength - 1 && pair.type == 'e') {
+    if (index == (int) blockLength - 1 && pair.type == 'e') {
         exons.back()->end = index;
     }
 
@@ -264,8 +264,7 @@ void Alignment::checkForStart(AlignedPair& pair) {
 }
 
 void Alignment::checkForStop(AlignedPair& pair) {
-    int alignmentPosition = realPositionCounter - dnaStart + 1;
-    if (index == blockLength - 1 && pairs[index - 3].type == 'e' &&
+    if (index == (int) blockLength - 1 && pairs[index - 3].type == 'e' &&
             (pair.nucleotide == 'a' || pair.nucleotide == 'g')) {
         string codon = "";
         codon += pair.nucleotide;
@@ -382,13 +381,13 @@ Alignment::Codon::Codon(int position, Exon * exon) {
     this->exon = exon;
 }
 
-void Alignment::scoreIntrons(int windowWidth, bool multiply,
+void Alignment::scoreIntrons(int windowWidth,
         const ScoreMatrix * scoreMatrix, Kernel * kernel) {
     this->scoreMatrix = scoreMatrix;
     this->kernel = kernel;
     this->kernel->setWidth(windowWidth);
 
-    for (i = 0; i < exons.size(); i++) {
+    for (unsigned int i = 0; i < exons.size(); i++) {
         scoreExon(exons[i]);
     }
 
@@ -408,13 +407,13 @@ void Alignment::scoreIntrons(int windowWidth, bool multiply,
 
     for (unsigned int i = 0; i < introns.size(); i++) {
         if (introns[i].complete && !introns[i].scoreSet) {
-            scoreIntron(introns[i], windowWidth, multiply);
+            scoreIntron(introns[i], windowWidth);
         }
     }
 
 }
 
-double Alignment::scoreIntron(Intron& intron, int windowWidth, bool multiply) {
+double Alignment::scoreIntron(Intron& intron, int windowWidth) {
     intron.leftScore = intron.rightScore = 0;
     int left, right;
 
@@ -442,20 +441,13 @@ double Alignment::scoreIntron(Intron& intron, int windowWidth, bool multiply) {
     double weightSum = kernel->weightSum();
 
     // Normalize alignments by the area under kernel
-    if (multiply) {
-        if (intron.leftScore <= 0 || intron.rightScore <= 0) {
-            intron.score = 0;
-        } else {
-            intron.score = (intron.leftScore / weightSum) *
-                    (intron.rightScore / weightSum);
-            intron.score = sqrt(intron.score);
-        }
+
+    if (intron.leftScore <= 0 || intron.rightScore <= 0) {
+        intron.score = 0;
     } else {
-        intron.score = (intron.leftScore + intron.rightScore) /
-                (weightSum * 2);
-        if (intron.score < 0) {
-            intron.score = 0;
-        }
+        intron.score = (intron.leftScore / weightSum) *
+                (intron.rightScore / weightSum);
+        intron.score = sqrt(intron.score);
     }
 
     intron.scoreSet = true;
