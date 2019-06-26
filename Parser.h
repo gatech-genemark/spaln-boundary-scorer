@@ -57,6 +57,11 @@ public:
      */
     void setKernel(Kernel * kernel);
 
+    /**
+    * Set minimum exon score
+    */
+    void setMinExonScore(double minExonScore);
+
     static const int BOUNDARIES_SUMMED = 1;
     static const int BOUNDARIES_MULTIPLIED = 2;
 
@@ -73,6 +78,7 @@ private:
     bool printAll;
     const ScoreMatrix * scoreMatrix;
     Kernel * kernel;
+    double minExonScore;
 
     /**
      * Return maximum possible score for an intron, depending on whether

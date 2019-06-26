@@ -9,11 +9,16 @@
 
 using namespace std;
 
+#define DEFAULT_WINDOW_WIDTH 10
+#define DEFAULT_KERNEL "triangular"
+#define DEFAULT_EXON_SCORE 25
+
 void printUsage(char * name) {
     cout << "Usage: " << name << " -i input_file -o output_file "
-            "[-w integer] [-am] [-s matrix_file] [-k kernel]" << endl;
+            "[-w integer] [-am] [-s matrix_file] [-k kernel] [-e min_exon_score]" << endl;
     cout << "Options:" << endl;
-    cout << "   -w Width of a scoring window around introns." << endl;
+    cout << "   -w Width of a scoring window around introns. Default = " <<
+            DEFAULT_WINDOW_WIDTH << endl;
     cout << "   -a Print all introns. Without  this flag, only  introns\n"
             "      with canonical splite sites and perfectly scored in-\n"
             "      trons with GC-AG and AT-AC splice sites are printed." << endl;
@@ -27,16 +32,20 @@ void printUsage(char * name) {
     cout << "   -k Specify type of weighting kernel used. Available opti-\n"
             "      ons are \"triangular\", \"box\", \"parabolic\" and \n"
             "      \"triweight\". Triangular kernel is the default option." << endl;
+    cout << "   -e Minimum exon score. Exons with lower scores (and int-\n"
+            "      rons bordering such exons) are not printed. Default = " <<
+            DEFAULT_EXON_SCORE << endl;
 }
 
 int main(int argc, char** argv) {
     int opt;
-    int windowWidth = 10;
+    int windowWidth = DEFAULT_WINDOW_WIDTH;
     bool printAllSites = false;
     bool multiply = true;
     string input, output;
     string matrixFile = "";
-    string kernelType = "triangular";
+    string kernelType = DEFAULT_KERNEL;
+    double minExonScore = DEFAULT_EXON_SCORE;
 
     while ((opt = getopt(argc, argv, "i:o:w:ams:k:")) != EOF) {
         switch (opt) {
@@ -60,6 +69,9 @@ int main(int argc, char** argv) {
                 break;
             case 'k':
                 kernelType = optarg;
+                break;
+            case 'e':
+                minExonScore = atof(optarg);
                 break;
             case '?':
                 printUsage(argv[0]);
@@ -121,6 +133,7 @@ int main(int argc, char** argv) {
     printAllSites ? fileParser.printAllSites() : fileParser.printCanonicalsites();
     fileParser.setScoringMatrix(scoreMatrix);
     fileParser.setKernel(kernel);
+    fileParser.setMinExonScore(minExonScore);
 
     int result = fileParser.parse(input, output);
 

@@ -84,3 +84,7 @@ void Parser::setScoringMatrix(const ScoreMatrix * scoreMatrix) {
 void Parser::setKernel(Kernel* kernel) {
     this->kernel = kernel;
 }
+
+void Parser::setMinExonScore(double minExonScore) {
+    this->minExonScore = minExonScore;
+}
