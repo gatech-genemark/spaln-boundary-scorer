@@ -16,6 +16,7 @@ using namespace std;
 Alignment::Alignment() {
     pairs.reserve(N);
     start = NULL;
+    stop = NULL;
 }
 
 Alignment::~Alignment() {
@@ -36,6 +37,10 @@ void Alignment::clear() {
         delete start;
     }
     start = NULL;
+    if (stop != NULL) {
+        delete stop;
+    }
+    stop = NULL;
 }
 
 int Alignment::parse(ifstream& inputStream, string headerLine) {
@@ -49,7 +54,7 @@ int Alignment::parse(ifstream& inputStream, string headerLine) {
         cerr << "error: Invalid alignment header " << endl;
         return status;
     }
-    //cout << gene << " " << protein << endl;
+  //  cout << gene << " " << protein << endl;
     // Get to the alignment
     getline(inputStream, line);
     while (line.substr(0, 9) != "ALIGNMENT") {
@@ -132,6 +137,7 @@ void Alignment::parseBlock(const vector<string>& lines) {
 
         checkForIntron(pair);
         checkForStart(pair);
+        checkForStop(pair);
 
         if (pair.nucleotide != '-' && pair.nucleotide != ' ') {
             pair.realPosition = realPositionCounter++;
@@ -203,9 +209,9 @@ void Alignment::checkForIntron(AlignedPair& pair) {
         exons.push_back(new Exon(index));
     }
 
-     if (index == blockLength - 1 && pair.type == 'e') {
+    if (index == blockLength - 1 && pair.type == 'e') {
         exons.back()->end = index;
-     }
+    }
 
     if (donorFlag) {
         introns.back().donor[1] = pair.nucleotide;
@@ -251,8 +257,24 @@ void Alignment::checkForStart(AlignedPair& pair) {
         if (codon == "ATG") {
             // Check if protein alignment starts with its first M
             if (proteinStart == 1 && pairs[index - 1].protein == 'M') {
-                start = new Start(index - 2, exons.back());
+                start = new Codon(index - 2, exons.back());
             }
+        }
+    }
+}
+
+void Alignment::checkForStop(AlignedPair& pair) {
+    int alignmentPosition = realPositionCounter - dnaStart + 1;
+    if (index == blockLength - 1 && pairs[index - 3].type == 'e' &&
+            (pair.nucleotide == 'a' || pair.nucleotide == 'g')) {
+        string codon = "";
+        codon += pair.nucleotide;
+        for (int i = 1; i < 3; i++) {
+            codon = pairs[index - i].nucleotide + codon;
+        }
+
+        if (codon == "taa" || codon == "tag" || codon == "tga") {
+            stop = new Codon(index - 2, exons.back());
         }
     }
 }
@@ -296,6 +318,16 @@ void Alignment::storeIntrons(string output, IntronStorage& storage) {
         ofs << "; exon_id=" << i + 1 << ";";
         ofs << " score=" << exons[i]->score << ";" << endl;
     }
+
+    if (stop != NULL) {
+        ofs << gene << "\tSpaln\tstop_codon\t";
+        ofs << pairs[stop->position].realPosition << "\t";
+        ofs << pairs[stop->position + 2].realPosition  << "\t";
+        ofs << ".\t+\t.\tprot=" << protein << ";";
+        ofs << " score=" << stop->score << ";";
+        ofs << " eScore=" << stop->exon->score << ";" << endl;
+    }
+
     ofs.close();
 }
 
@@ -345,7 +377,7 @@ Alignment::Exon::Exon(int start) {
     scoreSet = false;
 }
 
-Alignment::Start::Start(int position, Exon * exon) {
+Alignment::Codon::Codon(int position, Exon * exon) {
     this->position = position;
     this->exon = exon;
 }
@@ -365,6 +397,13 @@ void Alignment::scoreIntrons(int windowWidth, bool multiply,
         scoreStart(start, windowWidth);
         start->score /=  kernel->weightSum();
         start->score /= scoreMatrix->getMaxScore();
+    }
+
+    if (stop != NULL) {
+        stop->score = 0;
+        scoreStop(stop, windowWidth);
+        stop->score /=  kernel->weightSum();
+        stop->score /= scoreMatrix->getMaxScore();
     }
 
     for (unsigned int i = 0; i < introns.size(); i++) {
@@ -445,16 +484,28 @@ void Alignment::scoreRight(Intron & intron, int start, int windowWidth) {
     }
 }
 
-void Alignment::scoreStart(Start* start, int windowWidth) {
+void Alignment::scoreStart(Codon* start, int windowWidth) {
     for (int i = start->position + 1; i < (start->position + 1 + windowWidth * 3); i += 3) {
         // Check for end of local alignment
         if (i >= index || pairs[i].type != 'e') {
             return;
         }
-        double weight = kernel->getWeight((i - start->position + 1) / 3);
+        double weight = kernel->getWeight((i - start->position - 1) / 3);
         start->score += pairs[i].score(scoreMatrix) * weight;
     }
 }
+
+void Alignment::scoreStop(Codon* stop, int windowWidth) {
+    for (int i = stop->position - 2; i > (stop->position - 2 - windowWidth * 3); i -= 3) {
+        // Check for end of local alignment
+        if (i < 0 || pairs[i].type != 'e') {
+            return;
+        }
+        double weight = kernel->getWeight((i - stop->position + 2) / 3);
+        stop->score += pairs[i].score(scoreMatrix) * weight;
+    }
+}
+
 
 void Alignment::scoreExon(Exon* exon) {
     int i = exon->start;

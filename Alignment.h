@@ -120,9 +120,9 @@ private:
         bool scoreSet;
     };
 
-    struct Start {
-        Start(int position, Exon * exon);
-        unsigned int position;
+    struct Codon {
+        Codon(int position, Exon * exon);
+        int position;
         double score;
         Exon * exon;
     };
@@ -187,9 +187,11 @@ private:
     void checkForIntron(AlignedPair & pair);
 
     void checkForStart(AlignedPair & pair);
+    void checkForStop(AlignedPair & pair);
     vector<Intron> introns;
     vector<Exon*> exons;
-    Start * start;
+    Codon * start;
+    Codon * stop;
     const ScoreMatrix * scoreMatrix;
     Kernel * kernel;
 
@@ -203,7 +205,8 @@ private:
     /// Alignment score of amino acids in exon after intron end
     void scoreRight(Intron & intron, int start, int windowWidth);
     void scoreExon(Exon * exon);
-    void scoreStart(Start * start, int windowWidth);
+    void scoreStart(Codon * start, int windowWidth);
+    void scoreStop(Codon * stop, int windowWidth);
 };
 
 
