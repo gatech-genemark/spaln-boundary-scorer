@@ -49,8 +49,8 @@ TEST_CASE("Check random values") {
     CHECK (s.getScore('*', '*') == 1);
     CHECK (s.getScore('X', 'T') == 0);
     CHECK (s.getScore('P', 'I') == -3);
-    CHECK (s.getScore('.','A')  == 0);
-    CHECK (s.getScore('A','.')  == 0);
+    CHECK (s.getScore('.','A')  == -4);
+    CHECK (s.getScore('A','.')  == -4);
     CHECK (s.getScore(' ','A')  == -4);
     CHECK (s.getScore('-',' ')  == 1);
 }
