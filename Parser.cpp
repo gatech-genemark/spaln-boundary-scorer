@@ -24,8 +24,8 @@ int Parser::parse(string intputFile, string outputFile) {
 
     while (status != NO_MORE_ALIGNMENTS) {
         //cout << alignment.getGene() << " " << alignment.getProtein() << endl;
-        alignment.scoreIntrons(windowLength, scoreMatrix, kernel);
-        alignment.storeIntrons(outputFile, storage);
+        alignment.scoreHints(windowLength, scoreMatrix, kernel);
+        alignment.storeIntrons(outputFile, storage, minExonScore);
         status = parseNext();
     }
     storage.normalizeScores(0, maxScore());

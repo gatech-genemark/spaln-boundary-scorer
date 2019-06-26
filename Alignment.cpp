@@ -280,9 +280,10 @@ void Alignment::checkForStop(AlignedPair& pair) {
     }
 }
 
-void Alignment::storeIntrons(string output, IntronStorage& storage) {
+void Alignment::storeIntrons(string output, IntronStorage& storage, double minExonScore) {
     for (unsigned int i = 0; i < introns.size(); i++) {
-        if (!introns[i].complete) {
+        if (!introns[i].complete || introns[i].leftExon->score < minExonScore ||
+                introns[i].rightExon->score < minExonScore) {
             continue;
         }
         string spliceSites(introns[i].donor, 2);
@@ -302,7 +303,7 @@ void Alignment::storeIntrons(string output, IntronStorage& storage) {
     }
 
     ofstream ofs(output.c_str(), std::ofstream::out | std::ofstream::app);
-    if (start != NULL) {
+    if (start != NULL && start->exon->score >= minExonScore) {
         ofs << gene << "\tSpaln\tstart_codon\t";
         ofs << pairs[start->position].realPosition << "\t";
         ofs << pairs[start->position + 2].realPosition  << "\t";
@@ -312,6 +313,9 @@ void Alignment::storeIntrons(string output, IntronStorage& storage) {
     }
 
     for (unsigned int i = 0; i < exons.size(); i++) {
+        if (exons[i]->score < minExonScore) {
+            continue;
+        }
         ofs << gene << "\tSpaln\tCDS\t";
         ofs << pairs[exons[i]->start].realPosition << "\t";
         ofs << pairs[exons[i]->end].realPosition << "\t";
@@ -320,7 +324,7 @@ void Alignment::storeIntrons(string output, IntronStorage& storage) {
         ofs << " score=" << exons[i]->score << ";" << endl;
     }
 
-    if (stop != NULL) {
+    if (stop != NULL && stop->exon->score >= minExonScore) {
         ofs << gene << "\tSpaln\tstop_codon\t";
         ofs << pairs[stop->position].realPosition << "\t";
         ofs << pairs[stop->position + 2].realPosition  << "\t";
@@ -383,7 +387,7 @@ Alignment::Codon::Codon(int position, Exon * exon) {
     this->exon = exon;
 }
 
-void Alignment::scoreIntrons(int windowWidth,
+void Alignment::scoreHints(int windowWidth,
         const ScoreMatrix * scoreMatrix, Kernel * kernel) {
     this->scoreMatrix = scoreMatrix;
     this->kernel = kernel;

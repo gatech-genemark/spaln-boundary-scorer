@@ -44,9 +44,10 @@ public:
     /**
      * Store introns found in this alignment to the IntronStorage object
      * which contains all introns
-     * @param storeage The intron storage
+     * @param storage The intron storage
+     * @param minExonScore Do not save hints with exon score lower than this
      */
-    void storeIntrons(string output, IntronStorage & storage);
+    void storeIntrons(string output, IntronStorage & storage, double minExonScore);
     /**
      * Score all introns in the alignment
      * @param windowWidth Number of amino acids scored in the upstream and
@@ -55,7 +56,7 @@ public:
      *                    matrix is given, score is determined based on the
      *                    quality indicator in the input alignment file
      */
-    void scoreIntrons(int windowWidth,
+    void scoreHints(int windowWidth,
             const ScoreMatrix * scoreMatrix, Kernel * kernel);
     /**
      * @return True if alignment contains any introns
