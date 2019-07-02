@@ -23,7 +23,7 @@ public:
      * @param fstream File stream starting at the position of
      *                the alignment start.
      */
-    int parse(ifstream & inputStream, string headerLine);
+    int parse(istream & inputStream, string headerLine);
     /**
      * @return Name of the aligned gene
      */

@@ -10,31 +10,27 @@ Parser::Parser() {
     scoreMatrix = NULL;
 }
 
-int Parser::parse(string intputFile, string outputFile) {
+int Parser::parse(string outputFile) {
+    // Restart output file
     ofstream ofs(outputFile.c_str());
     ofs.close();
-    inputStream.open(intputFile.c_str());
-    if (!inputStream) {
-        cerr << "error: Failed to open file \"" << intputFile << "\"" << endl;
-        return OPEN_FAIL;
-    }
+
     int status = parseNext();
 
     while (status != NO_MORE_ALIGNMENTS) {
-        //cout << alignment.getGene() << " " << alignment.getProtein() << endl;
         alignment.scoreHints(windowLength, scoreMatrix, kernel);
         alignment.printHints(outputFile, minExonScore);
         status = parseNext();
     }
-    inputStream.close();
+
     return READ_SUCCESS;
 }
 
 int Parser::parseNext() {
     string line;
-    while (getline(inputStream, line)) {
+    while (getline(cin, line)) {
         if (line.substr(0,1) == ">") {
-            return alignment.parse(inputStream, line);
+            return alignment.parse(cin, line);
         }
     }
 
