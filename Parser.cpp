@@ -18,17 +18,14 @@ int Parser::parse(string intputFile, string outputFile) {
         cerr << "error: Failed to open file \"" << intputFile << "\"" << endl;
         return OPEN_FAIL;
     }
-    IntronStorage storage;
     int status = parseNext();
 
     while (status != NO_MORE_ALIGNMENTS) {
         //cout << alignment.getGene() << " " << alignment.getProtein() << endl;
         alignment.scoreHints(windowLength, scoreMatrix, kernel);
-        alignment.storeIntrons(outputFile, storage, minExonScore);
+        alignment.printHints(outputFile, minExonScore);
         status = parseNext();
     }
-    storage.normalizeScores(0, maxScore());
-    storage.printIntrons(outputFile);
     inputStream.close();
     return READ_SUCCESS;
 }

@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-c -Wall -std=c++11
 LDFLAGS=
-COMMON_SOURCES=Alignment.cpp Parser.cpp ScoreMatrix.cpp IntronStorage.cpp Kernel.cpp
+COMMON_SOURCES=Alignment.cpp Parser.cpp ScoreMatrix.cpp Kernel.cpp
 TARGET_SOURCES=main.cpp
 TEST_SOURCES=test/t_parser.cpp test/tests.cpp test/t_matrix.cpp
 COMMON_OBJECTS=$(COMMON_SOURCES:.cpp=.o)

@@ -11,8 +11,6 @@
 
 using namespace std;
 
-// TODO: Normalization
-
 Alignment::Alignment() {
     pairs.reserve(N);
     start = NULL;
@@ -280,29 +278,30 @@ void Alignment::checkForStop(AlignedPair& pair) {
     }
 }
 
-void Alignment::storeIntrons(string output, IntronStorage& storage, double minExonScore) {
+void Alignment::printHints(string output, double minExonScore) {
+    ofstream ofs(output.c_str(), std::ofstream::out | std::ofstream::app);
+
     for (unsigned int i = 0; i < introns.size(); i++) {
         if (!introns[i].complete || introns[i].leftExon->score < minExonScore ||
                 introns[i].rightExon->score < minExonScore) {
             continue;
         }
+
         string spliceSites(introns[i].donor, 2);
         spliceSites.append("_");
         spliceSites.append(introns[i].acceptor, 2);
 
-        if (!introns[i].scoreSet) {
-            introns[i].score = 0;
-        }
-
-        storage.storeIntron(protein, gene,
-                pairs[introns[i].start].realPosition,
-                pairs[introns[i].end].realPosition,
-                '+', spliceSites, introns[i].score, i + 1,
-                introns[i].leftExon->score,
-                introns[i].rightExon->score);
+        ofs << gene << "\tSpaln\tIntron\t";
+        ofs << pairs[introns[i].start].realPosition << "\t";
+        ofs << pairs[introns[i].end].realPosition << "\t";
+        ofs << ".\t+\t.\tprot=" << protein;
+        ofs << "; intron_id=" << i + 1 << ";";
+        ofs << " splice_sites=" << spliceSites << ";";
+        ofs << " al_score=" << introns[i].score << ";";
+        ofs << " LeScore=" << introns[i].leftExon->score << ";";
+        ofs << " ReScore=" << introns[i].rightExon->score << ";" << endl;
     }
 
-    ofstream ofs(output.c_str(), std::ofstream::out | std::ofstream::app);
     if (start != NULL && start->exon->score >= minExonScore) {
         ofs << gene << "\tSpaln\tstart_codon\t";
         ofs << pairs[start->position].realPosition << "\t";
@@ -456,6 +455,7 @@ double Alignment::scoreIntron(Intron& intron, int windowWidth) {
         intron.score = sqrt(intron.score);
     }
 
+    intron.score /= scoreMatrix->getMaxScore();
     intron.scoreSet = true;
     return intron.score;
 }

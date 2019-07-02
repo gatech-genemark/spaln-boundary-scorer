@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 #include "ScoreMatrix.h"
-#include "IntronStorage.h"
 #include "Kernel.h"
 
 using namespace std;
@@ -44,10 +43,9 @@ public:
     /**
      * Store introns found in this alignment to the IntronStorage object
      * which contains all introns
-     * @param storage The intron storage
      * @param minExonScore Do not save hints with exon score lower than this
      */
-    void storeIntrons(string output, IntronStorage & storage, double minExonScore);
+    void printHints(string output, double minExonScore);
     /**
      * Score all introns in the alignment
      * @param windowWidth Number of amino acids scored in the upstream and
