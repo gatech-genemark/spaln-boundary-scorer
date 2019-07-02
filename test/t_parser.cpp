@@ -17,7 +17,6 @@ TEST_CASE("Test whole program with different settings") {
     Parser fileParser;
     fileParser.setWindowLegth(10);
 
-    fileParser.printAllSites();
     string input = PATH + "/test_files/test_1.ali";
     string output = PATH + "/test_files/test_result";
     ScoreMatrix * scoreMatrix = new ScoreMatrix();

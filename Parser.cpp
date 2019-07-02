@@ -7,7 +7,6 @@ using namespace std;
 
 Parser::Parser() {
     windowLength = 10;
-    printAll = false;
     scoreMatrix = NULL;
 }
 
@@ -29,7 +28,7 @@ int Parser::parse(string intputFile, string outputFile) {
         status = parseNext();
     }
     storage.normalizeScores(0, maxScore());
-    storage.printIntrons(outputFile, printAll);
+    storage.printIntrons(outputFile);
     inputStream.close();
     return READ_SUCCESS;
 }
@@ -55,14 +54,6 @@ void Parser::setScoringCombination(int combination) {
 
 void Parser::setWindowLegth(int length) {
     windowLength = length;
-}
-
-void Parser::printAllSites() {
-    printAll = true;
-}
-
-void Parser::printCanonicalsites() {
-    printAll = false;
 }
 
 void Parser::setScoringMatrix(const ScoreMatrix * scoreMatrix) {

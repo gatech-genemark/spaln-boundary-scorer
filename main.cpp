@@ -19,9 +19,6 @@ void printUsage(char * name) {
     cout << "Options:" << endl;
     cout << "   -w Width of a scoring window around introns. Default = " <<
             DEFAULT_WINDOW_WIDTH << endl;
-    cout << "   -a Print all introns. Without  this flag, only  introns\n"
-            "      with canonical splite sites and perfectly scored in-\n"
-            "      trons with GC-AG and AT-AC splice sites are printed." << endl;
     cout << "   -s Use specified scoring matrix for intron scoring. Wi-\n"
             "      thout this option, amino acid scores are determined \n"
             "      based on the quality indicator in the input alignment \n"
@@ -38,13 +35,12 @@ void printUsage(char * name) {
 int main(int argc, char** argv) {
     int opt;
     int windowWidth = DEFAULT_WINDOW_WIDTH;
-    bool printAllSites = false;
     string input, output;
     string matrixFile = "";
     string kernelType = DEFAULT_KERNEL;
     double minExonScore = DEFAULT_EXON_SCORE;
 
-    while ((opt = getopt(argc, argv, "i:o:w:ams:k:e:")) != EOF) {
+    while ((opt = getopt(argc, argv, "i:o:w:s:k:e:")) != EOF) {
         switch (opt) {
             case 'i':
                 input = optarg;
@@ -54,9 +50,6 @@ int main(int argc, char** argv) {
                 break;
             case 'w':
                 windowWidth = atoi(optarg);
-                break;
-            case 'a':
-                printAllSites = true;
                 break;
             case 's':
                 matrixFile = optarg;
@@ -119,7 +112,6 @@ int main(int argc, char** argv) {
 
     Parser fileParser;
     fileParser.setWindowLegth(windowWidth);
-    printAllSites ? fileParser.printAllSites() : fileParser.printCanonicalsites();
     fileParser.setScoringMatrix(scoreMatrix);
     fileParser.setKernel(kernel);
     fileParser.setMinExonScore(minExonScore);

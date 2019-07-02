@@ -35,15 +35,6 @@ public:
     void setWindowLegth(int length);
 
     /**
-     * Print all splice sites during parsing
-     */
-    void printAllSites();
-    /**
-     * Print only canonical splice sites during parsing
-     */
-    void printCanonicalsites();
-
-    /**
      * Assign scoring matrix to the parser
      */
     void setScoringMatrix(const ScoreMatrix * scoreMatrix);
@@ -68,7 +59,6 @@ private:
     Alignment alignment;
     int scoreCombination;
     int windowLength;
-    bool printAll;
     const ScoreMatrix * scoreMatrix;
     Kernel * kernel;
     double minExonScore;

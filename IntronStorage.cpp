@@ -56,28 +56,15 @@ void IntronStorage::normalizeScores(double min, double max) {
     }
 }
 
-void IntronStorage::printIntrons(string output, bool printAll) {
+void IntronStorage::printIntrons(string output) {
     ofstream ofs(output.c_str(), std::ofstream::out | std::ofstream::app);
     for (unsigned int i = 0; i < introns.size(); i++) {
-        // Discard non-canonical splice sites unless the splice site is
-        // GC-AG or AT-AC with alignment score better than PRINT_THRESHOLD
-        string spliceSites = introns[i].spliceSites;
-        if (!printAll && spliceSites != "gt_ag") {
-            if (spliceSites == "gc_ag" || spliceSites == "at_ac") {
-                if (introns[i].score < PRINT_THRESHOLD) {
-                    continue;
-                }
-            } else {
-                continue;
-            }
-        }
-
         ofs << introns[i].gene << "\tSpaln\tIntron\t";
         ofs << introns[i].start << "\t";
         ofs << introns[i].end << "\t";
         ofs << ".\t+\t.\tprot=" << introns[i].protein;
         ofs << "; intron_id=" << introns[i].number << ";";
-        ofs << " splice_sites=" << spliceSites << ";";
+        ofs << " splice_sites=" << introns[i].spliceSites << ";";
         ofs << " al_score=" << introns[i].score << ";";
         ofs << " LeScore=" << introns[i].leftExonScore << ";";
         ofs << " ReScore=" << introns[i].rightExonScore << ";" << endl;

@@ -5,8 +5,6 @@
 #include <fstream>
 #include <vector>
 
-#define PRINT_THRESHOLD 0.7
-
 using namespace std;
 
 /**
@@ -44,7 +42,7 @@ public:
      * @param output Output file name
      * @param printAll Whether to print all splice sites.
      */
-    void printIntrons(string output, bool printAll);
+    void printIntrons(string output);
 
 private:
 
