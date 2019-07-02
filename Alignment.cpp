@@ -41,7 +41,7 @@ void Alignment::clear() {
     stop = NULL;
 }
 
-int Alignment::parse(ifstream& inputStream, string headerLine) {
+int Alignment::parse(istream& inputStream, string headerLine) {
     clear();
     vector<string> blockLines(BLOCK_ITEMS_CNT);
     string line;

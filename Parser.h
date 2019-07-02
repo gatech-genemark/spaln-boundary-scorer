@@ -20,10 +20,9 @@ public:
     Parser();
     /**
      * Parse the alignment file, save the output into output stream.
-     * @param inputFile Name of the alignment file
      * @param outputFile Name of the gff output file
      */
-    int parse(string inputFile, string outputFile);
+    int parse(string outputFile);
 
     /**
      * Set how scores from left and right intron boundary are combined
@@ -70,7 +69,6 @@ private:
      */
     double maxScore();
 
-    ifstream inputStream;
     static const char PAIR_SEPARATOR[];
     static const int NUM_SEPARATORS = 3;
 };

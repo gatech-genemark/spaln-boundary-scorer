@@ -14,7 +14,7 @@ using namespace std;
 #define DEFAULT_EXON_SCORE 25
 
 void printUsage(char * name) {
-    cout << "Usage: " << name << " -i input_file -o output_file "
+    cout << "Usage: " << name << " < input -o output_file "
             "[-w integer] [-am] [-s matrix_file] [-k kernel] [-e min_exon_score]" << endl;
     cout << "Options:" << endl;
     cout << "   -w Width of a scoring window around introns. Default = " <<
@@ -35,16 +35,13 @@ void printUsage(char * name) {
 int main(int argc, char** argv) {
     int opt;
     int windowWidth = DEFAULT_WINDOW_WIDTH;
-    string input, output;
+    string output;
     string matrixFile = "";
     string kernelType = DEFAULT_KERNEL;
     double minExonScore = DEFAULT_EXON_SCORE;
 
     while ((opt = getopt(argc, argv, "i:o:w:s:k:e:")) != EOF) {
         switch (opt) {
-            case 'i':
-                input = optarg;
-                break;
             case 'o':
                 output = optarg;
                 break;
@@ -67,12 +64,6 @@ int main(int argc, char** argv) {
                 return 1;
         }
 
-    }
-
-    if (input.size() == 0) {
-        cerr << "error: Input file not specified" << endl;
-        printUsage(argv[0]);
-        return 1;
     }
 
     if (output.size() == 0) {
@@ -116,7 +107,7 @@ int main(int argc, char** argv) {
     fileParser.setKernel(kernel);
     fileParser.setMinExonScore(minExonScore);
 
-    int result = fileParser.parse(input, output);
+    int result = fileParser.parse(output);
 
     delete scoreMatrix;
     delete kernel;
