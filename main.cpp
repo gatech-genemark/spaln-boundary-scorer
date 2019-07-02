@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     string kernelType = DEFAULT_KERNEL;
     double minExonScore = DEFAULT_EXON_SCORE;
 
-    while ((opt = getopt(argc, argv, "i:o:w:s:k:e:")) != EOF) {
+    while ((opt = getopt(argc, argv, "o:w:s:k:e:")) != EOF) {
         switch (opt) {
             case 'o':
                 output = optarg;
