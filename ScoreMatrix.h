@@ -29,6 +29,8 @@ private:
     // Replace common csv separators by whitespaces to make further
     // parsing easier
     void processLine(string & line);
+    void computeMaxScore();
+    double maxScore;
 };
 
 #endif /* SCORE_MATRIX_H */

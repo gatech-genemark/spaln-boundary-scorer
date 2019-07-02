@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <float.h>
 
 using namespace std;
 
@@ -34,17 +35,20 @@ double ScoreMatrix::getScore(char a, char b) const {
     return UNKNOWN_SCORE;
 }
 
-double ScoreMatrix::getMaxScore() const {
-    double max = 0;
+double ScoreMatrix::getMaxScore() const{
+    return maxScore;
+}
+
+void ScoreMatrix::computeMaxScore() {
+    maxScore = -1 * DBL_MAX;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             double score = matrix.at(columnHeaders[i]).at(columnHeaders[j]);
-            if (score > max) {
-                max = score;
+            if (score > maxScore) {
+                maxScore = score;
             }
         }
     }
-    return max;
 }
 
 bool ScoreMatrix::loadFromFile(string filename) {
@@ -67,6 +71,7 @@ bool ScoreMatrix::loadFromFile(string filename) {
     }
 
     inputStream.close();
+    computeMaxScore();
     return true;
 }
 
