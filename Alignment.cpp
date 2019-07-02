@@ -299,7 +299,7 @@ void Alignment::printHints(string output, double minExonScore) {
         ofs << " splice_sites=" << spliceSites << ";";
         ofs << " al_score=" << introns[i].score << ";";
         ofs << " LeScore=" << introns[i].leftExon->score << ";";
-        ofs << " ReScore=" << introns[i].rightExon->score << ";" << endl;
+        ofs << " ReScore=" << introns[i].rightExon->score << ";\n";
     }
 
     if (start != NULL && start->exon->score >= minExonScore) {
@@ -308,7 +308,7 @@ void Alignment::printHints(string output, double minExonScore) {
         ofs << pairs[start->position + 2].realPosition  << "\t";
         ofs << ".\t+\t.\tprot=" << protein << ";";
         ofs << " score=" << start->score << ";";
-        ofs << " eScore=" << start->exon->score << ";" << endl;
+        ofs << " eScore=" << start->exon->score << ";\n";
     }
 
     for (unsigned int i = 0; i < exons.size(); i++) {
@@ -320,7 +320,7 @@ void Alignment::printHints(string output, double minExonScore) {
         ofs << pairs[exons[i]->end].realPosition << "\t";
         ofs << ".\t+\t.\tprot=" << protein;
         ofs << "; exon_id=" << i + 1 << ";";
-        ofs << " score=" << exons[i]->score << ";" << endl;
+        ofs << " score=" << exons[i]->score << ";\n";
     }
 
     if (stop != NULL && stop->exon->score >= minExonScore) {
@@ -329,7 +329,7 @@ void Alignment::printHints(string output, double minExonScore) {
         ofs << pairs[stop->position + 2].realPosition  << "\t";
         ofs << ".\t+\t.\tprot=" << protein << ";";
         ofs << " score=" << stop->score << ";";
-        ofs << " eScore=" << stop->exon->score << ";" << endl;
+        ofs << " eScore=" << stop->exon->score << ";\n";
     }
 
     ofs.close();
