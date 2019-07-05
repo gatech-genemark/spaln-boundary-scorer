@@ -291,7 +291,7 @@ void Alignment::printHints(string output, double minExonScore) {
         spliceSites.append("_");
         spliceSites.append(introns[i].acceptor, 2);
 
-        ofs << gene << "\tSpaln\tIntron\t";
+        ofs << gene << "\tSpaln_Parser\tIntron\t";
         ofs << pairs[introns[i].start].realPosition << "\t";
         ofs << pairs[introns[i].end].realPosition << "\t";
         ofs << ".\t+\t.\tprot=" << protein;
@@ -303,7 +303,7 @@ void Alignment::printHints(string output, double minExonScore) {
     }
 
     if (start != NULL && start->exon->score >= minExonScore) {
-        ofs << gene << "\tSpaln\tstart_codon\t";
+        ofs << gene << "\tSpaln_Parser\tstart_codon\t";
         ofs << pairs[start->position].realPosition << "\t";
         ofs << pairs[start->position + 2].realPosition  << "\t";
         ofs << ".\t+\t.\tprot=" << protein << ";";
@@ -315,7 +315,7 @@ void Alignment::printHints(string output, double minExonScore) {
         if (exons[i]->score < minExonScore) {
             continue;
         }
-        ofs << gene << "\tSpaln\tCDS\t";
+        ofs << gene << "\tSpaln_Parser\tCDS\t";
         ofs << pairs[exons[i]->start].realPosition << "\t";
         ofs << pairs[exons[i]->end].realPosition << "\t";
         ofs << ".\t+\t.\tprot=" << protein;
@@ -324,7 +324,7 @@ void Alignment::printHints(string output, double minExonScore) {
     }
 
     if (stop != NULL && stop->exon->score >= minExonScore) {
-        ofs << gene << "\tSpaln\tstop_codon\t";
+        ofs << gene << "\tSpaln_Parser\tstop_codon\t";
         ofs << pairs[stop->position].realPosition << "\t";
         ofs << pairs[stop->position + 2].realPosition  << "\t";
         ofs << ".\t+\t.\tprot=" << protein << ";";
@@ -509,7 +509,6 @@ void Alignment::scoreExon(Exon* exon) {
     int i = exon->start;
     exon->score = 0;
     while (i <= exon->end) {
-        // check if equal to gapOrAA(pairs[i].protein) || gapOrAA(pairs[i].translatedCodon)
         if (gapOrAA(pairs[i].protein)) {
             exon->score += pairs[i].score(scoreMatrix);
         }
