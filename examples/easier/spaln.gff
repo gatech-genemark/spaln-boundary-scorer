@@ -1,6 +1,0 @@
-4713_t	Spaln	Start_codon	2001	2003	.	+	0	prot=174628_0:0027a1; eScore=325.9; elen=289; eid=45.19;
-4713_t	Spaln	Intron	2290	2351	.	+	.	prot=174628_0:0027a1; iScore=37.0; Llen=289; LScore=325.9; Lid=45.19; Rlen=659; RScore=843.1; Rid=61.82; Ssites=GT.AG;
-4713_t	Spaln	Intron	3011	3064	.	+	.	prot=174628_0:0027a1; iScore=30.1; Llen=659; LScore=843.1; Lid=61.82; Rlen=1426; RScore=1544.7; Rid=52.42; Ssites=GT.AG;
-4713_t	Spaln	Intron	4491	4551	.	+	.	prot=174628_0:0027a1; iScore=23.1; Llen=1426; LScore=1544.7; Lid=52.42; Rlen=152; RScore=283.8; Rid=82.35; Ssites=GT.AG;
-4713_t	Spaln	Intron	4704	4765	.	+	.	prot=174628_0:0027a1; iScore=18.1; Llen=152; LScore=283.8; Lid=82.35; Rlen=480; RScore=562.9; Rid=53.75; Ssites=GT.AG;
-4713_t	Spaln	Stop_codon	5246	5248	.	+	0	prot=174628_0:0027a1; eScore=562.9; elen=480; eid=53.75;

@@ -2,4 +2,6 @@ src
 *.o
 *.d
 nbproject
-
+.examples
+test/t_spaln_parser
+spaln_parser

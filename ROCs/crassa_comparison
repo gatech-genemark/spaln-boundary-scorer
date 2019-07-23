@@ -1,5 +1,0 @@
-('DrosophilaRandomForestClassifier with all train:', '0.8210145915723442')
-('NeurosporaRandomForestClassifier with all train:', '0.9236328924042002')
-('PombeRandomForestClassifier with all train:', '0.8189690440474567')
-('AnophelesRandomForestClassifier with all train:', '0.8881426428474022')
-('ElegansRandomForestClassifier with all train:', '0.8095254329742261')

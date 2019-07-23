@@ -1,8 +1,0 @@
-11863_t	ProSplign	Intron	3665	3732	.	+	.	prot=174628_0:0017dd; intron_id=1; splice_sites=GT_AG; al_score=0.221296;
-11863_t	ProSplign	Intron	3846	4518	.	+	.	prot=174628_0:0017dd; intron_id=2; splice_sites=GT_AG; al_score=0.0449635;
-11863_t	ProSplign	Intron	4670	4735	.	+	.	prot=174628_0:0017dd; intron_id=3; splice_sites=GT_AG; al_score=0.366993;
-11863_t	ProSplign	Intron	4920	4987	.	+	.	prot=174628_0:0017dd; intron_id=4; splice_sites=GT_AG; al_score=0.322964;
-11863_t	ProSplign	Intron	5175	5235	.	+	.	prot=174628_0:0017dd; intron_id=5; splice_sites=GT_AG; al_score=0.38512;
-11863_t	ProSplign	Intron	5372	5422	.	+	.	prot=174628_0:0017dd; intron_id=6; splice_sites=GT_AG; al_score=0.311252;
-11863_t	ProSplign	Intron	5750	5811	.	+	.	prot=174628_0:0017dd; intron_id=7; splice_sites=GT_AG; al_score=0.389613;
-11863_t	ProSplign	Intron	5969	6025	.	+	.	prot=174628_0:0017dd; intron_id=8; splice_sites=GT_AG; al_score=0.309539;
