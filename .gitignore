@@ -5,3 +5,4 @@ nbproject
 .examples
 test/t_spaln_parser
 spaln_parser
+test/test_files/test_1.ali
