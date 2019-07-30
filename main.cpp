@@ -14,8 +14,8 @@ using namespace std;
 #define DEFAULT_EXON_SCORE 25
 
 void printUsage(char * name) {
-    cout << "Usage: " << name << " < input -o output_file "
-            "[-w integer] [-am] [-s matrix_file] [-k kernel] [-e min_exon_score]" << endl;
+    cout << "Usage: " << name << " < input -o output_file -s matrix_file "
+            "[-w integer] [-k kernel] [-e min_exon_score]" << endl;
     cout << "Options:" << endl;
     cout << "   -w Width of a scoring window around introns. Default = " <<
             DEFAULT_WINDOW_WIDTH << endl;
@@ -72,6 +72,12 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    if (matrixFile.empty()) {
+        cerr << "error: Score matrix not specified" << endl;
+        printUsage(argv[0]);
+        return 1;
+    }
+
     if (kernelType != "triangular" && kernelType != "box" &&
             kernelType != "parabolic" && kernelType != "triweight") {
         cerr << "error: Invalid kernel. Valid options are \"box\","
@@ -80,14 +86,11 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    ScoreMatrix * scoreMatrix = NULL;
-    if (!matrixFile.empty()) {
-        scoreMatrix = new ScoreMatrix();
-        if (!scoreMatrix->loadFromFile(matrixFile)) {
-            cerr << "error: Could not load scoring matrix" << endl;
-            printUsage(argv[0]);
-            return 1;
-        }
+    ScoreMatrix * scoreMatrix = new ScoreMatrix();
+    if (!scoreMatrix->loadFromFile(matrixFile)) {
+        cerr << "error: Could not load scoring matrix" << endl;
+        printUsage(argv[0]);
+        return 1;
     }
 
     Kernel * kernel;
