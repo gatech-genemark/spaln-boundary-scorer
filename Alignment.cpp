@@ -139,9 +139,18 @@ void Alignment::parseBlock(const vector<string>& lines) {
         checkForStop(pair);
 
         if (pair.nucleotide != '-' && pair.nucleotide != ' ') {
-            pair.realPosition = realPositionCounter++;
+            if (forward) {
+                pair.realPosition = realPositionCounter++;
+            } else {
+                pair.realPosition = realPositionCounter--;
+            }
         } else {
-            pair.realPosition = realPositionCounter - 1;
+            // Don't increment the counter
+            if (forward) {
+                pair.realPosition = realPositionCounter - 1;
+            } else {
+                pair.realPosition = realPositionCounter + 1;
+            }
         }
 
         // Reuse space if possible
@@ -205,7 +214,14 @@ void Alignment::assignCodonPhases() {
 }
 
 void Alignment::checkForIntron(AlignedPair& pair) {
-    int alignmentPosition = realPositionCounter - dnaStart + 1;
+    // Some alignments start with a gap or intron, do not create initial exon
+    // in such cases
+    int alignmentPosition;
+    if (forward) {
+        alignmentPosition = realPositionCounter - dnaStart + 1;
+    } else {
+        alignmentPosition = dnaStart - realPositionCounter + 1;
+    }
     if (alignmentPosition == 1 && pair.type == 'e' && pair.nucleotide != '-') {
         exons.push_back(new Exon(index));
     }
@@ -281,6 +297,12 @@ void Alignment::checkForStop(AlignedPair& pair) {
 
 void Alignment::printHints(string output, double minExonScore) {
     ofstream ofs(output.c_str(), std::ofstream::out | std::ofstream::app);
+    char strand;
+    if (forward) {
+        strand = '+';
+    } else {
+        strand = '-';
+    }
 
     for (unsigned int i = 0; i < introns.size(); i++) {
         if (!introns[i].complete || introns[i].leftExon->score < minExonScore ||
@@ -293,9 +315,14 @@ void Alignment::printHints(string output, double minExonScore) {
         spliceSites.append(introns[i].acceptor, 2);
 
         ofs << gene << "\tSpaln_Parser\tIntron\t";
-        ofs << pairs[introns[i].start].realPosition << "\t";
-        ofs << pairs[introns[i].end].realPosition << "\t";
-        ofs << ".\t+\t.\tprot=" << protein;
+        if (forward) {
+            ofs << pairs[introns[i].start].realPosition << "\t";
+            ofs << pairs[introns[i].end].realPosition << "\t";
+        } else {
+            ofs << pairs[introns[i].end].realPosition << "\t";
+            ofs << pairs[introns[i].start].realPosition << "\t";
+        }
+        ofs << ".\t" << strand << "\t.\tprot=" << protein;
         ofs << "; intron_id=" << i + 1 << ";";
         ofs << " splice_sites=" << spliceSites << ";";
         ofs << " al_score=" << introns[i].score << ";";
@@ -305,9 +332,14 @@ void Alignment::printHints(string output, double minExonScore) {
 
     if (start != NULL && start->exon->score >= minExonScore) {
         ofs << gene << "\tSpaln_Parser\tstart_codon\t";
-        ofs << pairs[start->position].realPosition << "\t";
-        ofs << pairs[start->position + 2].realPosition  << "\t";
-        ofs << ".\t+\t.\tprot=" << protein << ";";
+        if (forward) {
+            ofs << pairs[start->position].realPosition << "\t";
+            ofs << pairs[start->position + 2].realPosition  << "\t";
+        } else {
+            ofs << pairs[start->position + 2].realPosition  << "\t";
+            ofs << pairs[start->position].realPosition << "\t";
+        }
+        ofs << ".\t" << strand << "\t.\tprot=" << protein << ";";
         ofs << " score=" << start->score << ";";
         ofs << " eScore=" << start->exon->score << ";\n";
     }
@@ -317,18 +349,28 @@ void Alignment::printHints(string output, double minExonScore) {
             continue;
         }
         ofs << gene << "\tSpaln_Parser\tCDS\t";
-        ofs << pairs[exons[i]->start].realPosition << "\t";
-        ofs << pairs[exons[i]->end].realPosition << "\t";
-        ofs << ".\t+\t.\tprot=" << protein;
+        if (forward) {
+            ofs << pairs[exons[i]->start].realPosition << "\t";
+            ofs << pairs[exons[i]->end].realPosition << "\t";
+        } else {
+            ofs << pairs[exons[i]->end].realPosition << "\t";
+            ofs << pairs[exons[i]->start].realPosition << "\t";
+        }
+        ofs << ".\t" << strand << "\t.\tprot=" << protein;
         ofs << "; exon_id=" << i + 1 << ";";
         ofs << " score=" << exons[i]->score << ";\n";
     }
 
     if (stop != NULL && stop->exon->score >= minExonScore) {
         ofs << gene << "\tSpaln_Parser\tstop_codon\t";
-        ofs << pairs[stop->position].realPosition << "\t";
-        ofs << pairs[stop->position + 2].realPosition  << "\t";
-        ofs << ".\t+\t.\tprot=" << protein << ";";
+        if (forward) {
+            ofs << pairs[stop->position].realPosition << "\t";
+            ofs << pairs[stop->position + 2].realPosition  << "\t";
+        } else {
+            ofs << pairs[stop->position + 2].realPosition  << "\t";
+            ofs << pairs[stop->position].realPosition << "\t";
+        }
+        ofs << ".\t" << strand << "\t.\tprot=" << protein << ";";
         ofs << " score=" << stop->score << ";";
         ofs << " eScore=" << stop->exon->score << ";\n";
     }
