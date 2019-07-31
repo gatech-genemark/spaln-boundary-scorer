@@ -8,6 +8,7 @@ using namespace std;
 Parser::Parser() {
     windowLength = 10;
     scoreMatrix = NULL;
+    processReverse = false;
 }
 
 int Parser::parse(string outputFile) {
@@ -30,7 +31,9 @@ int Parser::parseNext() {
     string line;
     while (getline(cin, line)) {
         if (line.substr(0,1) == ">") {
-            return alignment.parse(cin, line);
+            return alignment.parse(cin, line, true);
+        } else if (processReverse && line.substr(0,1) == "<") {
+            return alignment.parse(cin, line, false);
         }
     }
 
@@ -59,4 +62,8 @@ void Parser::setKernel(Kernel* kernel) {
 
 void Parser::setMinExonScore(double minExonScore) {
     this->minExonScore = minExonScore;
+}
+
+void Parser::setProcessReverse(bool processReverse) {
+    this->processReverse = processReverse;
 }

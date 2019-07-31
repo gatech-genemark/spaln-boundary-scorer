@@ -30,6 +30,7 @@ void printUsage(char * name) {
             "      rons bordering such exons; start and stops inside the \n"
             "      exons) are not printed. Default = " <<
             DEFAULT_EXON_SCORE << endl;
+    cout << "   -r Process alignments on the reverse DNA strand." << endl;
 }
 
 int main(int argc, char** argv) {
@@ -39,8 +40,9 @@ int main(int argc, char** argv) {
     string matrixFile = "";
     string kernelType = DEFAULT_KERNEL;
     double minExonScore = DEFAULT_EXON_SCORE;
+    bool processReverse = false;
 
-    while ((opt = getopt(argc, argv, "o:w:s:k:e:")) != EOF) {
+    while ((opt = getopt(argc, argv, "o:w:s:k:e:r")) != EOF) {
         switch (opt) {
             case 'o':
                 output = optarg;
@@ -56,6 +58,9 @@ int main(int argc, char** argv) {
                 break;
             case 'e':
                 minExonScore = atof(optarg);
+                break;
+            case 'r':
+                processReverse = true;
                 break;
             case '?':
                 printUsage(argv[0]);
@@ -109,6 +114,7 @@ int main(int argc, char** argv) {
     fileParser.setScoringMatrix(scoreMatrix);
     fileParser.setKernel(kernel);
     fileParser.setMinExonScore(minExonScore);
+    fileParser.setProcessReverse(processReverse);
 
     int result = fileParser.parse(output);
 

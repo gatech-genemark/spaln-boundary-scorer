@@ -23,7 +23,7 @@ public:
      * @param fstream File stream starting at the position of
      *                the alignment start.
      */
-    int parse(istream & inputStream, string headerLine);
+    int parse(istream & inputStream, string headerLine, bool forward);
     /**
      * @return Name of the aligned gene
      */
@@ -78,6 +78,7 @@ private:
     /// Overall position in alignment
     int index;
     int realPositionCounter;
+    bool forward;
 
     /// Single nucleotide-protein pair
     struct AlignedPair {

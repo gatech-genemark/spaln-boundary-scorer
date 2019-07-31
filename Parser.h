@@ -48,6 +48,11 @@ public:
     */
     void setMinExonScore(double minExonScore);
 
+    /**
+    * Set whether alignments on the reverse strand are processed
+    */
+    void setProcessReverse(bool processReverse);
+
 private:
     /**
      * Parse next alignment in the input file.
@@ -61,6 +66,7 @@ private:
     const ScoreMatrix * scoreMatrix;
     Kernel * kernel;
     double minExonScore;
+    bool processReverse;
 
     /**
      * Return maximum possible score for an intron, depending on whether

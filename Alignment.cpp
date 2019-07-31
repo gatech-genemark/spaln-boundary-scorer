@@ -41,8 +41,9 @@ void Alignment::clear() {
     stop = NULL;
 }
 
-int Alignment::parse(istream& inputStream, string headerLine) {
+int Alignment::parse(istream& inputStream, string headerLine, bool forward) {
     clear();
+    this->forward = forward;
     vector<string> blockLines(BLOCK_ITEMS_CNT);
     string line;
 
@@ -113,7 +114,7 @@ int Alignment::parse(istream& inputStream, string headerLine) {
 int Alignment::parseHeader(string headerLine) {
     bool geneParsed = false;
     for (unsigned int i = 0; i < headerLine.size(); i++) {
-        if (headerLine[i] == '>') {
+        if (headerLine[i] == '>' || headerLine[i] == '<') {
             if (!geneParsed) {
                 int length = headerLine.find(" ", i + 1) - i - 1;
                 gene = headerLine.substr(i + 1, length);
