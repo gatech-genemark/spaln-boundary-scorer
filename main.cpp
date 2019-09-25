@@ -19,10 +19,7 @@ void printUsage(char * name) {
     cout << "Options:" << endl;
     cout << "   -w Width of a scoring window around introns. Default = " <<
             DEFAULT_WINDOW_WIDTH << endl;
-    cout << "   -s Use specified scoring matrix for intron scoring. Wi-\n"
-            "      thout this option, amino acid scores are determined \n"
-            "      based on the quality indicator in the input alignment \n"
-            "      file." << endl;
+    cout << "   -s Path to amino acid scoring matrix" << endl;
     cout << "   -k Specify type of weighting kernel used. Available opti-\n"
             "      ons are \"triangular\", \"box\", \"parabolic\" and \n"
             "      \"triweight\". Triangular kernel is the default option." << endl;
