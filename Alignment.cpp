@@ -233,8 +233,6 @@ void Alignment::checkForIntron(AlignedPair& pair) {
     if (donorFlag) {
         introns.back().donor[1] = pair.nucleotide;
         donorFlag = false;
-        // If the read is at donor position, there is nothing else to check for
-        return;
     }
     if (!insideIntron && pair.type == 'i') { // intron start
         Intron i;
@@ -248,15 +246,20 @@ void Alignment::checkForIntron(AlignedPair& pair) {
         insideIntron = true;
         donorFlag = true;
     } else if (insideIntron && pair.type != 'i') { // intron end
-        introns.back().end = index - 1;
-        introns.back().acceptor[0] = pairs[index - 2].nucleotide;
-        introns.back().acceptor[1] = pairs[index - 1].nucleotide;
         insideIntron = false;
-        if (introns.back().start != 0 && introns.back().gap == false) {
-            introns.back().complete = true;
-        }
         exons.push_back(new Exon(index));
-        introns.back().rightExon = exons.back();
+        // Frameshift
+        if (index - introns.back().start < 3) {
+            introns.pop_back();
+        } else {
+            introns.back().end = index - 1;
+            introns.back().acceptor[0] = pairs[index - 2].nucleotide;
+            introns.back().acceptor[1] = pairs[index - 1].nucleotide;
+            if (introns.back().start != 0 && introns.back().gap == false) {
+                introns.back().complete = true;
+            }
+            introns.back().rightExon = exons.back();
+        }
     } else if (insideIntron && pair.nucleotide == '-') {
         // Gap (AA aligned) inside introns, do not report these introns
         introns.back().gap = true;
