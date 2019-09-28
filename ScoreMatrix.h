@@ -14,9 +14,17 @@ using namespace std;
 
 class ScoreMatrix {
 public:
-    /// Load scoring matrix from a file in csv format
+    /**
+     * Load scoring matrix from a file in csv format
+     */
     bool loadFromFile(string filename);
+    /**
+     * Return score of a specified amino acid pair
+     */
     double getScore(char a, char b) const;
+    /**
+     * Return maximum score of an amino acid pair in the matrix
+     */
     double getMaxScore() const;
     void print() const;
 private:
@@ -26,8 +34,6 @@ private:
     vector<char> columnHeaders;
     bool readColumnHeaders();
     bool readRow();
-    // Replace common csv separators by whitespaces to make further
-    // parsing easier
     void processLine(string & line);
     void computeMaxScore();
     double maxScore;

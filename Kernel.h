@@ -4,8 +4,20 @@
 /// Abstract Kernel class
 class Kernel {
 public:
+    /**
+     * Return weight at OFFSET amino acids away from the boundary
+     * @param offset Distance from the boundary (in amino acids).
+     *               Offset coordinates are zero-based
+     * @return kernel weight
+     */
     virtual double getWeight(int offset) = 0;
+    /**
+     * Set scoring window width
+     */
     virtual void setWidth(int width);
+    /**
+     * Sum of all kernel weights within a window, are under kernel
+     */
     virtual double weightSum();
     virtual ~Kernel() {}
 protected:
