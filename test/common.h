@@ -1,3 +1,3 @@
 #include <string>
 
-extern std::string PATH;
+extern std::string ROOT_PATH;

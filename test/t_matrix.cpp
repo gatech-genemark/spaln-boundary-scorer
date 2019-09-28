@@ -8,9 +8,9 @@ using namespace std;
 TEST_CASE("Test loading of same matrices from csv "
         "files with different separators") {
 
-    string inputFile1 = PATH + "/test_files/blosum62_1.csv";
-    string inputFile2 = PATH + "/test_files/blosum62_2.csv";
-    string inputFile3 = PATH + "/test_files/blosum62_3.csv";
+    string inputFile1 = ROOT_PATH + "/test_files/blosum62_1.csv";
+    string inputFile2 = ROOT_PATH + "/test_files/blosum62_2.csv";
+    string inputFile3 = ROOT_PATH + "/test_files/blosum62_3.csv";
 
     string aminoAcids = "ARNDCQEGHILKMFPSTWYVBZX*";
 
@@ -34,14 +34,14 @@ TEST_CASE("Test loading of same matrices from csv "
 }
 
 TEST_CASE("Detect corrupted file") {
-    string inputFile1 = PATH + "/test_files/blosum62_corrupted.csv";
+    string inputFile1 = ROOT_PATH + "/test_files/blosum62_corrupted.csv";
     ScoreMatrix s;
     bool result = s.loadFromFile(inputFile1);
     CHECK_FALSE(result);
 }
 
 TEST_CASE("Check random values") {
-    string inputFile1 = PATH + "/test_files/blosum62_1.csv";
+    string inputFile1 = ROOT_PATH + "/test_files/blosum62_1.csv";
     ScoreMatrix s;
     s.loadFromFile(inputFile1);
     CHECK (s.getScore('A', 'A') == 4);
@@ -56,7 +56,7 @@ TEST_CASE("Check random values") {
 }
 
 TEST_CASE("Check max value for AA") {
-    string inputFile1 = PATH + "/test_files/blosum62_1.csv";
+    string inputFile1 = ROOT_PATH + "/test_files/blosum62_1.csv";
     ScoreMatrix s;
     s.loadFromFile(inputFile1);
     CHECK (s.getMaxScore() == 11);
