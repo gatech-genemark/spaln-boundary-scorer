@@ -7,8 +7,8 @@ TEST_SOURCES=test/t_parser.cpp test/tests.cpp test/t_matrix.cpp
 COMMON_OBJECTS=$(COMMON_SOURCES:.cpp=.o)
 TARGET_OBJECTS=$(TARGET_SOURCES:.cpp=.o)
 TEST_OBJECTS=$(TEST_SOURCES:.cpp=.o)
-EXECUTABLE=spaln_parser
-TEST_EXECUTABLE=test/t_spaln_parser
+EXECUTABLE=spaln_boundary_scorer
+TEST_EXECUTABLE=test/t_spaln_boundary_scorer
 
 .PHONY: test all target clean
 
@@ -29,7 +29,7 @@ $(EXECUTABLE): $(COMMON_OBJECTS) $(TARGET_OBJECTS)
 $(TEST_EXECUTABLE): $(COMMON_OBJECTS) $(TEST_OBJECTS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-.cpp.o: 
+.cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
 	$(CC) -MM $(CFLAGS) $< > $*.d
 
