@@ -15,11 +15,13 @@ using namespace std;
 
 void printUsage(char * name) {
     cout << "Usage: " << name << " < input -o output_file -s matrix_file "
-            "[-w integer] [-k kernel] [-e min_exon_score]" << endl;
+            "[-w integer] [-k kernel] [-e min_exon_score] [-r]" << endl;
+    cout << "The input is read from stdin." << endl;
     cout << "Options:" << endl;
+    cout << "   -o Where to save output file" << endl;
+    cout << "   -s Path to amino acid scoring matrix" << endl;
     cout << "   -w Width of a scoring window around introns. Default = " <<
             DEFAULT_WINDOW_WIDTH << endl;
-    cout << "   -s Path to amino acid scoring matrix" << endl;
     cout << "   -k Specify type of weighting kernel used. Available opti-\n"
             "      ons are \"triangular\", \"box\", \"parabolic\" and \n"
             "      \"triweight\". Triangular kernel is the default option." << endl;
@@ -27,7 +29,7 @@ void printUsage(char * name) {
             "      rons bordering such exons; start and stops inside the \n"
             "      exons) are not printed. Default = " <<
             DEFAULT_EXON_SCORE << endl;
-    cout << "   -r Process alignments on the reverse DNA strand." << endl;
+    cout << "   -r Process alignments on the reverse DNA strand" << endl;
 }
 
 int main(int argc, char** argv) {
