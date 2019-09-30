@@ -15,8 +15,11 @@ using namespace std;
 
 void printUsage(char * name) {
     cout << "Usage: " << name << " < input -o output_file -s matrix_file "
-            "[-w integer] [-k kernel] [-e min_exon_score] [-r]" << endl;
-    cout << "The input is read from stdin." << endl;
+            "[-w integer] [-k kernel] [-e min_exon_score] [-r]" << endl << endl;
+    cout << "The program can parse multiple separate alignments saved in the same\n"
+            "input. The input is read from stdin. Each input alignment is assumed\n"
+            "to be on a single line (number of characters per line, controlled\n"
+            "by -l option in Spaln, is larger than the alignment length)." << endl << endl;
     cout << "Options:" << endl;
     cout << "   -o Where to save output file" << endl;
     cout << "   -s Path to amino acid scoring matrix" << endl;
@@ -29,7 +32,8 @@ void printUsage(char * name) {
             "      rons bordering such exons; start and stops inside the \n"
             "      exons) are not printed. Default = " <<
             DEFAULT_EXON_SCORE << endl;
-    cout << "   -r Process alignments on the reverse DNA strand" << endl;
+    cout << "   -r Process alignments on the reverse DNA strand (which are\n"
+            "      ignored by default)" << endl;
 }
 
 int main(int argc, char** argv) {
