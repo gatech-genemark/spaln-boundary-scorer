@@ -3,7 +3,7 @@
 Spaln boundary scorer parses introns, starts, stops and exons from Spaln's
 alignment output and scores them. Introns, starts and stops are scored based
 on local alignment quality around their boundaries. Detailed description of
-how the scores are computed is available in:
+how the scores are computed is available in (TODO: add link to manuscript)
 
 ## Installation and usage
 
