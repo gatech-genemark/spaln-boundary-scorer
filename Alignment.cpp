@@ -486,7 +486,7 @@ void Alignment::printStart(ofstream& ofs, char strand, double minExonScore) {
             ofs << pairs[start->position].realPosition << "\t";
         }
         ofs << ".\t" << strand << "\t.\tprot=" << protein << ";";
-        ofs << " score=" << start->score << ";";
+        ofs << " al_score=" << start->score << ";";
         ofs << " eScore=" << start->exon->score << ";\n";
     }
 }
@@ -506,7 +506,7 @@ void Alignment::printExons(ofstream& ofs, char strand, double minExonScore) {
         }
         ofs << ".\t" << strand << "\t.\tprot=" << protein;
         ofs << "; exon_id=" << i + 1 << ";";
-        ofs << " score=" << exons[i]->score << ";\n";
+        ofs << " eScore=" << exons[i]->score << ";\n";
     }
 }
 
@@ -521,7 +521,7 @@ void Alignment::printStop(ofstream& ofs, char strand, double minExonScore) {
             ofs << pairs[stop->position].realPosition << "\t";
         }
         ofs << ".\t" << strand << "\t.\tprot=" << protein << ";";
-        ofs << " score=" << stop->score << ";";
+        ofs << " al_score=" << stop->score << ";";
         ofs << " eScore=" << stop->exon->score << ";\n";
     }
 }
