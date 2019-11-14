@@ -1,4 +1,4 @@
-# Spaln boundary parser
+# Spaln boundary scorer
 
 Tomas Bruna, Alexandre Lomsadze, Mark Borodovsky
 
