@@ -1,4 +1,12 @@
-# Description
+# Spaln boundary parser
+
+Tomas Bruna, Alexandre Lomsadze, Mark Borodovsky
+
+Georgia Institute of Technology, Atlanta, Georgia, USA
+
+Reference: _GeneMark-EP and -EP+: automatic eukaryotic gene prediction supported by spliced aligned proteins_ (paper in preparation, 2019)
+
+## Description
 
 Spaln boundary scorer parses introns, starts, stops and exons from Spaln's
 alignment output and scores them. Introns, starts and stops are scored based
