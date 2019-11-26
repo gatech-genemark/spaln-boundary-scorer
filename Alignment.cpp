@@ -332,17 +332,15 @@ double Alignment::scoreIntron(Intron& intron, int windowWidth) {
         // Codon is not split
         left = intron.start - 2;
         right = intron.end + 2;
+    } else if (pairs[intron.start - 1].protein == '1'
+            || pairs[intron.start - 1].translatedCodon == '1') {
+        // Codon is split after the first nucleotide
+        left = intron.start - 3;
+        right = intron.end + 1;
     } else {
-        if (pairs[intron.start - 2].protein == '3'
-                || pairs[intron.start - 2].translatedCodon == '3') {
-            // Codon is split after the first nucleotide
-            left = intron.start - 3;
-            right = intron.end + 1;
-        } else {
-            // Codon is split after the second nucleotide
-            left = intron.start - 1;
-            right = intron.end + 3;
-        }
+        // Codon is split after the second nucleotide
+        left = intron.start - 1;
+        right = intron.end + 3;
     }
 
     scoreLeft(intron, left, windowWidth);
