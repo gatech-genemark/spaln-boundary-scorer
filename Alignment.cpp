@@ -252,6 +252,30 @@ void Alignment::checkForIntron(AlignedPair& pair) {
     } else if (insideIntron && pair.type != 'i') { // intron end
         insideIntron = false;
         exons.push_back(new Exon(index));
+
+        // Make the decision about exon phase based on
+        // how the preceeding exon was split.
+        if (introns.back().start != 0) {
+            if (gapOrAA(pairs[introns.back().start - 1].protein)) {
+                exons.back()->phase = 1;
+            } else if (introns.back().start - 2 < 0) {
+                // Reached start of alignment
+                exons.back()->phase = 2;
+            } else {
+                int position = introns.back().start - 2;
+                if (pairs[position].type != 'e') {
+                    // Check if still in exon (some exons are just 1 nt long).
+                    // If not, take last nt from next exon upstream
+                    position = introns[introns.size() - 2].start - 1;
+                }
+                if (position >= 0 && gapOrAA(pairs[position].protein)) {
+                    exons.back()->phase = 0;
+                } else {
+                    exons.back()->phase = 2;
+                }
+            }
+        }
+
         // Frameshift, remove false intron
         if (index - introns.back().start < 3) {
             introns.pop_back();
@@ -483,7 +507,7 @@ void Alignment::printStart(ofstream& ofs, char strand, double minExonScore) {
             ofs << pairs[start->position + 2].realPosition  << "\t";
             ofs << pairs[start->position].realPosition << "\t";
         }
-        ofs << ".\t" << strand << "\t.\tprot=" << protein << ";";
+        ofs << ".\t" << strand << "\t0\tprot=" << protein << ";";
         ofs << " al_score=" << start->score << ";";
         ofs << " eScore=" << start->exon->score << ";\n";
     }
@@ -502,7 +526,7 @@ void Alignment::printExons(ofstream& ofs, char strand, double minExonScore) {
             ofs << pairs[exons[i]->end].realPosition << "\t";
             ofs << pairs[exons[i]->start].realPosition << "\t";
         }
-        ofs << ".\t" << strand << "\t.\tprot=" << protein;
+        ofs << ".\t" << strand << "\t" << exons[i]->phase << "\tprot=" << protein;
         ofs << "; exon_id=" << i + 1 << ";";
         ofs << " eScore=" << exons[i]->score << ";\n";
     }
@@ -518,7 +542,7 @@ void Alignment::printStop(ofstream& ofs, char strand, double minExonScore) {
             ofs << pairs[stop->position + 2].realPosition  << "\t";
             ofs << pairs[stop->position].realPosition << "\t";
         }
-        ofs << ".\t" << strand << "\t.\tprot=" << protein << ";";
+        ofs << ".\t" << strand << "\t0\tprot=" << protein << ";";
         ofs << " al_score=" << stop->score << ";";
         ofs << " eScore=" << stop->exon->score << ";\n";
     }
@@ -587,6 +611,7 @@ Alignment::Intron::Intron() {
 
 Alignment::Exon::Exon(int start) {
     this->start = start;
+    phase = 0;
     scoreSet = false;
 }
 

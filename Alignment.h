@@ -92,6 +92,7 @@ private:
         Exon(int start);
         int start, end;
         double score;
+        int phase;
         bool scoreSet;
     };
 
