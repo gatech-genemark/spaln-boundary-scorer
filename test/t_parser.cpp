@@ -31,6 +31,8 @@ TEST_CASE("Test whole program with different settings") {
     SECTION("All") {
         freopen(inputFile.c_str(), "r", stdin);
         fileParser.setMinExonScore(-999999);
+        fileParser.setMinInitialExonScore(-999999);
+        fileParser.setMinInitialIntronScore(-999999);
         fileParser.parse(output);
         int result = returnDiff("test_parser.gff", output);
         CHECK(result == 0);
@@ -38,9 +40,11 @@ TEST_CASE("Test whole program with different settings") {
 
     std::cin.clear();
 
-    SECTION("Exon filter 25") {
+    SECTION("Standard filters") {
         freopen(inputFile.c_str(), "r", stdin);
         fileParser.setMinExonScore(25);
+        fileParser.setMinInitialIntronScore(0.1);
+        fileParser.setMinInitialExonScore(0);
         fileParser.parse(output);
         int result = returnDiff("test_parser_eScore_25.gff", output);
         CHECK(result == 0);
