@@ -45,10 +45,13 @@ public:
     /**
      * Print scored hints
      *
-     * @param output       Output file name
-     * @param minExonScore Do not print hints with exon score lower than this
+     * @param output                Output file name
+     * @param minExonScore          Do not print hints with exon score lower than this
+     * @param minInitialExonScore   Do not print hints with initial exon score lower than this
+     * @param minInitialIntronScore Do not print hints with initial intron score lower than this
      */
-    void printHints(string output, double minExonScore);
+    void printHints(string output, double minExonScore,
+                    double minInitialExonScore, double minInitialIntronScore);
     /**
      * Score all hints in the alignment
      * @param windowWidth Number of amino acids scored in the upstream/
@@ -92,8 +95,10 @@ private:
         Exon(int start);
         int start, end;
         double score;
+        double normalizedScore;
         int phase;
         bool scoreSet;
+        bool initial;
     };
 
     /// Structure for parsed starts and stops
@@ -174,9 +179,12 @@ private:
     void scoreStart(int windowWidth);
     void scoreStop(int windowWidth);
 
-    void printIntrons(ofstream & ofs, char strand, double minExonScore);
-    void printStart(ofstream & ofs, char strand, double minExonScore);
-    void printExons(ofstream & ofs, char strand, double minExonScore);
+    void printIntrons(ofstream & ofs, char strand, double minExonScore,
+                      double minInitialExonScore, double minInitialIntronScore);
+    void printStart(ofstream & ofs, char strand, double minExonScore,
+                    double minInitialExonScore, double minInitialIntronScore);
+    void printExons(ofstream & ofs, char strand, double minExonScore,
+                    double minInitialExonScore, double minInitialIntronScore);
     void printStop(ofstream & ofs, char strand, double minExonScore);
 
     static const int BLOCK_ITEMS_CNT = 3;

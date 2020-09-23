@@ -44,6 +44,14 @@ public:
     */
     void setMinExonScore(double minExonScore);
     /**
+    * Set minimum initial exon score
+    */
+    void setMinInitialExonScore(double minInitialExonScore);
+    /**
+    * Set minimum initial intron score
+    */
+    void setMinInitialIntronScore(double minInitialIntronScore);
+    /**
     * Set whether alignments on the reverse strand are processed
     */
     void setProcessReverse(bool processReverse);
@@ -67,6 +75,8 @@ private:
     const ScoreMatrix * scoreMatrix;
     Kernel * kernel;
     double minExonScore;
+    double minInitialExonScore;
+    double minInitialIntronScore;
     bool processReverse;
 };
 

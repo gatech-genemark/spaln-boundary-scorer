@@ -20,7 +20,8 @@ int Parser::parse(string outputFile) {
 
     while (status != NO_MORE_ALIGNMENTS) {
         alignment.scoreHints(windowLength, scoreMatrix, kernel);
-        alignment.printHints(outputFile, minExonScore);
+        alignment.printHints(outputFile, minExonScore, minInitialExonScore,
+                             minInitialIntronScore);
         status = parseNext();
     }
 
@@ -63,6 +64,15 @@ void Parser::setKernel(Kernel* kernel) {
 void Parser::setMinExonScore(double minExonScore) {
     this->minExonScore = minExonScore;
 }
+
+void Parser::setMinInitialExonScore(double minInitialExonScore) {
+    this->minInitialExonScore = minInitialExonScore;
+}
+
+void Parser::setMinInitialIntronScore(double minInitialIntronScore) {
+    this->minInitialIntronScore = minInitialIntronScore;
+}
+
 
 void Parser::setProcessReverse(bool processReverse) {
     this->processReverse = processReverse;
