@@ -4,14 +4,15 @@ Tomas Bruna, Alexandre Lomsadze, Mark Borodovsky
 
 Georgia Institute of Technology, Atlanta, Georgia, USA
 
-Reference: _GeneMark-EP and -EP+: automatic eukaryotic gene prediction supported by spliced aligned proteins_ (paper in preparation, 2019)
+Reference: [GeneMark-EP+: eukaryotic gene prediction with self-training in the space of genes and proteins](https://academic.oup.com/nargab/article/2/2/lqaa026/5836691)
 
 ## Description
 
 Spaln boundary scorer parses introns, starts, stops and exons from Spaln's
 alignment output and scores them. Introns, starts and stops are scored based
 on local alignment quality around their boundaries. Detailed description of
-how the scores are computed is available in (TODO: add link to manuscript)
+how the scores are computed is available in
+https://academic.oup.com/nargab/article/2/2/lqaa026/5836691.
 
 ## Installation and usage
 
