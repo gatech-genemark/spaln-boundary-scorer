@@ -12,10 +12,12 @@ using namespace std;
 #define DEFAULT_WINDOW_WIDTH 10
 #define DEFAULT_KERNEL "triangular"
 #define DEFAULT_EXON_SCORE 25
+#define DEFAULT_INITIAL_EXON_SCORE 0
+#define DEFAULT_INITIAL_INTRON_SCORE 0.1
 
 void printUsage(char * name) {
     cout << "Usage: " << name << " < input -o output_file -s matrix_file "
-            "[-w integer] [-k kernel] [-e min_exon_score] [-r]" << endl << endl;
+            "[-w integer] [-k kernel] [-e min_exon_score] [-x min_initial_exon_score] [-i min_initial_intron_score] [-r]" << endl << endl;
     cout << "The program can parse multiple separate alignments saved in the same\n"
             "input. The input is read from stdin. Each input alignment is assumed\n"
             "to be on a single line (number of characters per line, controlled\n"
@@ -28,12 +30,23 @@ void printUsage(char * name) {
     cout << "   -k Specify type of weighting kernel used. Available opti-\n"
             "      ons are \"triangular\", \"box\", \"parabolic\" and \n"
             "      \"triweight\". Triangular kernel is the default option." << endl;
-    cout << "   -e Minimum exon score. Exons with lower scores (and int-\n"
-            "      rons bordering such exons; start and stops inside the \n"
-            "      exons) are not printed. Default = " <<
+    cout << "   -e Minimum exon score. Exons with lower scores (as wells as int-\n"
+            "      rons bordering such low-scoring exons and starts/stops inside\n"
+            "      them are not printed). Initial exons are treated separately.\n"
+            "      See the options -x and -i for details. Default = " <<
             DEFAULT_EXON_SCORE << endl;
+    cout << "   -x Minimum initial exon score. Initial exons with lower scores\n"
+            "      (as well as introns bordering such low-scoring exons and starts\n"
+            "      inside them) are not printed. Default = " <<
+            DEFAULT_INITIAL_EXON_SCORE << endl;
+    cout << "   -i Minimum initial intron score. Initial introns (i.e. bordering\n"
+            "      initial exons) with lower scores (as well as initial exons\n"
+            "      bordering such low-scoring introns and starts in those exons)\n"
+            "      are not printed. Default = " <<
+            DEFAULT_INITIAL_INTRON_SCORE << endl;
     cout << "   -r Process alignments on the reverse DNA strand (which are\n"
-            "      ignored by default)" << endl;
+            "      ignored by default). This option might not be working properly\n"
+            "      in this version!" << endl;
 }
 
 int main(int argc, char** argv) {
@@ -43,9 +56,11 @@ int main(int argc, char** argv) {
     string matrixFile = "";
     string kernelType = DEFAULT_KERNEL;
     double minExonScore = DEFAULT_EXON_SCORE;
+    double minInitialIntronScore = DEFAULT_INITIAL_INTRON_SCORE;
+    double minInitialExonScore = DEFAULT_INITIAL_EXON_SCORE;
     bool processReverse = false;
 
-    while ((opt = getopt(argc, argv, "o:w:s:k:e:r")) != EOF) {
+    while ((opt = getopt(argc, argv, "o:w:s:k:e:i:x:r")) != EOF) {
         switch (opt) {
             case 'o':
                 output = optarg;
@@ -61,6 +76,12 @@ int main(int argc, char** argv) {
                 break;
             case 'e':
                 minExonScore = atof(optarg);
+                break;
+            case 'i':
+                minInitialIntronScore = atof(optarg);
+                break;
+            case 'x':
+                minInitialExonScore = atof(optarg);
                 break;
             case 'r':
                 processReverse = true;
@@ -82,6 +103,13 @@ int main(int argc, char** argv) {
 
     if (matrixFile.empty()) {
         cerr << "error: Score matrix not specified" << endl;
+        printUsage(argv[0]);
+        return 1;
+    }
+
+    if (minInitialExonScore > minExonScore) {
+        cerr << "error: Minimum initial exon score must be lower than "
+                "minimum exon score."<< endl;
         printUsage(argv[0]);
         return 1;
     }
@@ -117,6 +145,8 @@ int main(int argc, char** argv) {
     fileParser.setScoringMatrix(scoreMatrix);
     fileParser.setKernel(kernel);
     fileParser.setMinExonScore(minExonScore);
+    fileParser.setMinInitialExonScore(minInitialExonScore);
+    fileParser.setMinInitialIntronScore(minInitialIntronScore);
     fileParser.setProcessReverse(processReverse);
 
     int result = fileParser.parse(output);
