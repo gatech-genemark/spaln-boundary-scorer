@@ -37,12 +37,15 @@ void printUsage(char * name) {
             DEFAULT_EXON_SCORE << endl;
     cout << "   -x Minimum initial exon score. Initial exons with lower scores\n"
             "      (as well as introns bordering such low-scoring exons and starts\n"
-            "      inside them) are not printed. Default = " <<
+            "      inside them) are not printed. Initial exons with scores between\n"
+            "      (-e and -x) must also define an initial intron which passes the\n"
+            "      -i filter. << Default = " <<
             DEFAULT_INITIAL_EXON_SCORE << endl;
-    cout << "   -i Minimum initial intron score. Initial introns (i.e. bordering\n"
-            "      initial exons) with lower scores (as well as initial exons\n"
-            "      bordering such low-scoring introns and starts in those exons)\n"
-            "      are not printed. Default = " <<
+    cout << "   -i Minimum initial intron score. Initial introns bordering\n"
+            "      initial exons with scores < -e that have lower intron scores\n"
+            "      (as well as initial exons bordering such low-scoring\n"
+            "      introns and starts in those exons) are not printed.\n"
+            "      Default = " <<
             DEFAULT_INITIAL_INTRON_SCORE << endl;
     cout << "   -r Process alignments on the reverse DNA strand (which are\n"
             "      ignored by default). This option might not be working properly\n"
