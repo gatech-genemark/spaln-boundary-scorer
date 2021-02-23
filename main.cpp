@@ -12,8 +12,8 @@ using namespace std;
 #define DEFAULT_WINDOW_WIDTH 10
 #define DEFAULT_KERNEL "triangular"
 #define DEFAULT_EXON_SCORE 25
-#define DEFAULT_INITIAL_EXON_SCORE 0
-#define DEFAULT_INITIAL_INTRON_SCORE 0.1
+#define DEFAULT_INITIAL_EXON_SCORE 25
+#define DEFAULT_INITIAL_INTRON_SCORE 0
 
 void printUsage(char * name) {
     cout << "Usage: " << name << " < input -o output_file -s matrix_file "
@@ -39,7 +39,7 @@ void printUsage(char * name) {
             "      (as well as introns bordering such low-scoring exons and starts\n"
             "      inside them) are not printed. Initial exons with scores between\n"
             "      (-e and -x) must also define an initial intron which passes the\n"
-            "      -i filter. << Default = " <<
+            "      -i filter. Default = " <<
             DEFAULT_INITIAL_EXON_SCORE << endl;
     cout << "   -i Minimum initial intron score. Initial introns bordering\n"
             "      initial exons with scores < -e that have lower intron scores\n"
